@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>MediScan - Multimedia Medical Visualizer</title>
+	<title>MediScan | Multimedia Medical Visualizer</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<style>
@@ -11,27 +11,25 @@
 			margin: 0;
 			padding: 0;
 			box-sizing: border-box;
-			font-family: Arial, Helvetica, sans-serif;
+			font-family: "Segoe UI", sans-serif;
 		}
 
 		body {
-			background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+			background: radial-gradient(circle at top, #1f2c3d, #0f141a);
 			color: white;
 			text-align: center;
 			padding: 30px;
 		}
 
-		header {
-			margin-bottom: 40px;
-		}
-
 		h1 {
-			font-size: 2.5rem;
+			font-size: 2.8rem;
 			margin-bottom: 10px;
+			color: #00e0ff;
 		}
 
-		p {
-			opacity: 0.9;
+		h2 {
+			margin-top: 40px;
+			margin-bottom: 10px;
 		}
 
 		.container {
@@ -46,7 +44,7 @@
 			border-radius: 8px;
 			border: none;
 			resize: none;
-			margin-top: 20px;
+			font-size: 1rem;
 		}
 
 		button {
@@ -54,7 +52,7 @@
 			padding: 12px 25px;
 			border: none;
 			border-radius: 6px;
-			background: #00c6ff;
+			background: #00e0ff;
 			color: black;
 			font-weight: bold;
 			cursor: pointer;
@@ -62,18 +60,19 @@
 		}
 
 		button:hover {
-			background: #00a2cc;
+			background: #00b5cc;
 		}
 
 		.output {
 			margin-top: 30px;
 			padding: 20px;
-			background: rgba(255, 255, 255, 0.1);
+			background: rgba(255, 255, 255, 0.08);
 			border-radius: 10px;
+			min-height: 120px;
 		}
 
 		.ghost-container {
-			margin-top: 50px;
+			margin-top: 60px;
 		}
 
 		.ghost-grid {
@@ -83,7 +82,7 @@
 			margin-top: 20px;
 		}
 
-		.ghost-grid img {
+		video {
 			width: 100%;
 			border-radius: 10px;
 		}
@@ -98,66 +97,95 @@
 
 <body>
 
-	<header>
-		<h1>MediScan</h1>
-		<p>Multimedia Medical Visualization System</p>
-	</header>
+	<h1>MediScan</h1>
+	<p>AI-Powered Multimedia Medical Visualization System</p>
 
 	<div class="container">
 
-		<h2>Describe Your Symptoms</h2>
+		<h2>🎤 Describe Your Symptoms</h2>
 
-		<textarea id="symptoms" placeholder="Example: I have chest pain and shortness of breath..."></textarea>
-
+		<textarea id="symptoms" placeholder="Click microphone or type symptoms..."></textarea>
 		<br>
 
-		<button onclick="analyzeSymptoms()">Analyze (Simulated AI)</button>
+		<button onclick="startSpeech()">🎤 Start Voice Input</button>
+		<button onclick="analyze()">🧠 Analyze</button>
 
 		<div class="output" id="result">
-			<h3>AI Explanation Output</h3>
-			<p>Your medical explanation will appear here...</p>
+			AI explanation will appear here...
 		</div>
 
-		<div class="ghost-container">
-			<h2>4-Sided Pepper’s Ghost Visual</h2>
+		<h2>🎥 4-Sided Pepper's Ghost Hologram Mode</h2>
 
-			<p>Place your phone/device in a transparent pyramid to see the holographic illusion.</p>
+		<p>Place device in transparent pyramid to view hologram illusion.</p>
 
-			<div class="ghost-grid">
-				<img src="client/assets/heart.jpg" alt="Top View">
-				<img src="client/assets/heart.jpg" alt="Right View">
-				<img src="client/assets/heart.jpg" alt="Bottom View">
-				<img src="client/assets/heart.jpg" alt="Left View">
-			</div>
+		<div class="ghost-grid">
+			<video autoplay loop muted>
+				<source src="assets/heart.mp4" type="video/mp4">
+			</video>
+			<video autoplay loop muted>
+				<source src="assets/heart.mp4" type="video/mp4">
+			</video>
+			<video autoplay loop muted>
+				<source src="assets/heart.mp4" type="video/mp4">
+			</video>
+			<video autoplay loop muted>
+				<source src="assets/heart.mp4" type="video/mp4">
+			</video>
 		</div>
 
 	</div>
 
 	<footer>
-		Electronic Media & Multimedia Systems Project
-		MediScan © 2026
+		Electronic Media & Multimedia Systems Project — 2026
 	</footer>
 
 	<script>
-		function analyzeSymptoms() {
+
+		// 🎤 Web Speech API
+		function startSpeech() {
+			const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+			recognition.lang = "en-US";
+			recognition.start();
+
+			recognition.onresult = function (event) {
+				document.getElementById("symptoms").value = event.results[0][0].transcript;
+			};
+		}
+
+		// 🧠 Simulated AI Analysis
+		function analyze() {
 			const input = document.getElementById("symptoms").value;
-			const output = document.getElementById("result");
+			const resultDiv = document.getElementById("result");
 
 			if (input.trim() === "") {
-				output.innerHTML = "<h3>Error</h3><p>Please describe your symptoms.</p>";
+				resultDiv.innerHTML = "Please describe symptoms.";
 				return;
 			}
 
-			// Simulated AI explanation
-			output.innerHTML = `
-        <h3>AI Medical Explanation</h3>
-        <p>
-        Based on your described symptoms, this may indicate a cardiovascular or respiratory-related condition.
-        Chest pain and shortness of breath can be associated with reduced oxygen supply or heart strain.
-        Further medical examination such as ECG or chest imaging is recommended.
-        </p>
-    `;
+			let explanation = "";
+
+			if (input.toLowerCase().includes("chest")) {
+				explanation = "Chest pain may indicate cardiovascular strain, reduced oxygen flow, or inflammation. A clinical ECG or chest imaging is recommended.";
+			} else if (input.toLowerCase().includes("head")) {
+				explanation = "Headache may be related to tension, dehydration, or neurological factors. Proper hydration and medical evaluation may be necessary.";
+			} else {
+				explanation = "Based on your symptoms, further diagnostic evaluation is advised to determine the underlying physiological condition.";
+			}
+
+			resultDiv.innerHTML = explanation;
+
+			speak(explanation);
 		}
+
+		// 🔊 Text-to-Speech
+		function speak(text) {
+			const speech = new SpeechSynthesisUtterance(text);
+			speech.lang = "en-US";
+			speech.rate = 1;
+			speech.pitch = 1;
+			window.speechSynthesis.speak(speech);
+		}
+
 	</script>
 
 </body>
