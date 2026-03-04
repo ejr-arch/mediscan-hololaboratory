@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>MediScan - Multimedia Medical Visualizer</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: Arial, Helvetica, sans-serif;
+		}
+
+		body {
+			background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+			color: white;
+			text-align: center;
+			padding: 30px;
+		}
+
+		header {
+			margin-bottom: 40px;
+		}
+
+		h1 {
+			font-size: 2.5rem;
+			margin-bottom: 10px;
+		}
+
+		p {
+			opacity: 0.9;
+		}
+
+		.container {
+			max-width: 900px;
+			margin: auto;
+		}
+
+		textarea {
+			width: 100%;
+			height: 120px;
+			padding: 15px;
+			border-radius: 8px;
+			border: none;
+			resize: none;
+			margin-top: 20px;
+		}
+
+		button {
+			margin-top: 15px;
+			padding: 12px 25px;
+			border: none;
+			border-radius: 6px;
+			background: #00c6ff;
+			color: black;
+			font-weight: bold;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		button:hover {
+			background: #00a2cc;
+		}
+
+		.output {
+			margin-top: 30px;
+			padding: 20px;
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 10px;
+		}
+
+		.ghost-container {
+			margin-top: 50px;
+		}
+
+		.ghost-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 20px;
+			margin-top: 20px;
+		}
+
+		.ghost-grid img {
+			width: 100%;
+			border-radius: 10px;
+		}
+
+		footer {
+			margin-top: 60px;
+			font-size: 0.8rem;
+			opacity: 0.6;
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<h1>MediScan</h1>
+		<p>Multimedia Medical Visualization System</p>
+	</header>
+
+	<div class="container">
+
+		<h2>Describe Your Symptoms</h2>
+
+		<textarea id="symptoms" placeholder="Example: I have chest pain and shortness of breath..."></textarea>
+
+		<br>
+
+		<button onclick="analyzeSymptoms()">Analyze (Simulated AI)</button>
+
+		<div class="output" id="result">
+			<h3>AI Explanation Output</h3>
+			<p>Your medical explanation will appear here...</p>
+		</div>
+
+		<div class="ghost-container">
+			<h2>4-Sided Pepper’s Ghost Visual</h2>
+
+			<p>Place your phone/device in a transparent pyramid to see the holographic illusion.</p>
+
+			<div class="ghost-grid">
+				<img src="client/assets/heart.jpg" alt="Top View">
+				<img src="client/assets/heart.jpg" alt="Right View">
+				<img src="client/assets/heart.jpg" alt="Bottom View">
+				<img src="client/assets/heart.jpg" alt="Left View">
+			</div>
+		</div>
+
+	</div>
+
+	<footer>
+		Electronic Media & Multimedia Systems Project
+		MediScan © 2026
+	</footer>
+
+	<script>
+		function analyzeSymptoms() {
+			const input = document.getElementById("symptoms").value;
+			const output = document.getElementById("result");
+
+			if (input.trim() === "") {
+				output.innerHTML = "<h3>Error</h3><p>Please describe your symptoms.</p>";
+				return;
+			}
+
+			// Simulated AI explanation
+			output.innerHTML = `
+        <h3>AI Medical Explanation</h3>
+        <p>
+        Based on your described symptoms, this may indicate a cardiovascular or respiratory-related condition.
+        Chest pain and shortness of breath can be associated with reduced oxygen supply or heart strain.
+        Further medical examination such as ECG or chest imaging is recommended.
+        </p>
+    `;
+		}
+	</script>
+
+</body>
+
+</html>
