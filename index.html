@@ -82,6 +82,18 @@
 			margin-top: 20px;
 		}
 
+		/* Video container */
+		.ghost-video {
+			position: fixed;
+			right: 0;
+			bottom: 0;
+			min-width: 100%;
+			min-height: 100%;
+			z-index: -1;
+			/* Push video behind content */
+			object-fit: cover;
+		}
+
 		video {
 			width: 100%;
 			border-radius: 10px;
@@ -128,6 +140,11 @@
 		Electronic Media & Multimedia Systems Project — 2026
 	</footer>
 	<script>
+		// function reduce video play speed
+		const videos = document.querySelectorAll(".ghost-video");
+		videos.forEach(video => {
+			video.playbackRate = 0.3;
+		});
 		// 🎤 Voice Input (Web Speech API)
 		function startSpeech() {
 
