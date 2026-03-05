@@ -1,93 +1,105 @@
-// 🎤 Voice Input (Web Speech API)
-function startSpeech() {
+		//make enter key send(analyze button)
+		document.addEventListener("keydown", function (event) {
+			if (event.key === "Enter") {
+				event.preventDefault();	//stop enter from creating a new line
+				document.getElementById("symptoms").blur(); //deselect textarea on pressing enter
+				analyze(); //call analyze function
+			}
+			//make shiftkey and enter to go new line in text area but do not display output
+			if (event.shiftKey && event.key === "Enter") {
+				event.preventDefault();
+				document.getElementById("symptoms").value += "\n";
+			}
 
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("Speech recognition not supported. Use Chrome or Chromium.");
-        return;
-    }
+		})
+		// function reduce video play speed
+		const videos = document.querySelectorAll(".bg-video");
+		videos.forEach(video => {
+			video.playbackRate = 0.3;
+		});
+		// 🎤 Voice Input (Web Speech API)
+		function startSpeech() {
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+			if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+				alert("Speech recognition not supported. Use Chrome or Chromium.");
+				return;
+			}
 
-    recognition.lang = "en-US";
-    recognition.start();
+			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+			const recognition = new SpeechRecognition();
 
-    recognition.onresult = function(event) {
-        document.getElementById("symptoms").value =
-            event.results[0][0].transcript;
-    };
+			recognition.lang = "en-US";
+			recognition.start();
 
-    recognition.onerror = function(event) {
-        console.error("Speech error:", event.error);
-    };
-}
+			recognition.onresult = function (event) {
+				document.getElementById("symptoms").value =
+					event.results[0][0].transcript;
+			};
 
+			recognition.onerror = function (event) {
+				console.error("Speech error:", event.error);
+			};
+		}
 
-// 🧠 AI Simulation + Video Switch
-function analyze() {
+		function changeHologram(videoFile) {
+			const video = document.getElementById("hologramVideo");
 
-    const input = document.getElementById("symptoms").value.toLowerCase();
-    const resultDiv = document.getElementById("result");
+			video.pause();
 
-    if (input.trim() === "") {
-        resultDiv.innerHTML = "Please describe your symptoms.";
-        return;
-    }
+			video.src = videoFile;
 
-    let explanation = "";
-    let videoFile = "assets/default.mp4";
+			video.load();
 
-    // ---- AI LOGIC ----
-    if (input.includes("chest") || input.includes("heart")) {
+			video.play().catch(() => { });
+		}
 
-        explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen supply. Clinical evaluation such as ECG is recommended.";
-        videoFile = "assets/heart.mp4";
+		// 🧠 AI Simulation + Video Switch
+		function analyze() {
+			const input = document.getElementById("symptoms").value.toLowerCase();
+			const result = document.getElementById("result");
 
-    } else if (input.includes("head") || input.includes("brain")) {
+			let explanation = "";
+			let video = "client/assets/default.mp4";
 
-        explanation = "Headache may result from neurological stress, dehydration, or vascular changes.";
-        videoFile = "assets/brain.mp4";
+			if (input.includes("chest") || input.includes("heart")) {
+				explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen circulation.";
+				video = "client/assets/heart.mp4";
+			}
 
-    } else if (input.includes("lung") || input.includes("breath")) {
+			else if (input.includes("head") || input.includes("brain")) {
+				explanation = "Headache may be related to neurological stress or vascular pressure.";
+				video = "client/assets/brain.mp4";
+			}
 
-        explanation = "Breathing difficulty may indicate pulmonary inflammation or airway obstruction.";
-        videoFile = "assets/lungs.mp4";
+			else if (input.includes("lung") || input.includes("breath")) {
+				explanation = "Breathing difficulty may indicate pulmonary inflammation.";
+				video = "client/assets/lungs.mp4";
+			}
 
-    } else {
+			else {
+				explanation = "Symptoms require further diagnostic evaluation.";
+				video = "client/assets/default.mp4";
+			}
 
-        explanation = "Symptoms require further diagnostic evaluation to determine physiological causes.";
-        videoFile = "assets/default.mp4";
-    }
+			result.innerHTML = explanation;
 
-    // Display explanation
-    resultDiv.innerHTML = explanation;
+			speak(explanation);
 
-    // 🔊 Speak explanation
-    speak(explanation);
+			changeHologram(video);
+		}
 
-    // 🎥 Switch hologram videos
-    const videos = document.querySelectorAll(".ghost-video");
+		// 🔊 Text-to-Speech
+		function speak(text) {
 
-    videos.forEach(video => {
-        video.src = videoFile;
-        video.load();
-        video.play();
-    });
-}
+			if (!('speechSynthesis' in window)) {
+				console.log("TTS not supported.");
+				return;
+			}
 
+			const speech = new SpeechSynthesisUtterance(text);
+			speech.lang = "en-US";
+			speech.rate = 1;
+			speech.pitch = 1;
 
-// 🔊 Text-to-Speech
-function speak(text) {
-
-    if (!('speechSynthesis' in window)) {
-        console.log("TTS not supported.");
-        return;
-    }
-
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-US";
-    speech.rate = 1;
-    speech.pitch = 1;
-
-    window.speechSynthesis.speak(speech);
-}
+			window.speechSynthesis.speak(speech);
+		}
