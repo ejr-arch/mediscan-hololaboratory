@@ -83,7 +83,7 @@
 			margin-top: 20px;
 		}
 
-		.ghost-video {
+		.bg-video {
 			position: fixed;
 			right: 0;
 			bottom: 0;
@@ -129,8 +129,11 @@
 
 		<p>Place device in transparent pyramid to view hologram illusion.</p>
 
-		<div class="ghost-grid">
-			<video class="ghost-video" autoplay loop muted src="client/assets/default.mp4"></video>
+		<div>
+			<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
+		</div>
+		<div class="hologram-container">
+			<video id="hologramVideo" autoplay loop muted playsinline src="client/assets/none.mp4"></video>
 		</div>
 
 	</div>
@@ -147,14 +150,15 @@
 				document.getElementById("symptoms").blur(); //deselect textarea on pressing enter
 				analyze(); //call analyze function
 			}
-			//make shiftkey and enter to go new line in text area
+			//make shiftkey and enter to go new line in text area but do not display output
 			if (event.shiftKey && event.key === "Enter") {
+				event.preventDefault();
 				document.getElementById("symptoms").value += "\n";
 			}
 
 		})
 		// function reduce video play speed
-		const videos = document.querySelectorAll(".ghost-video");
+		const videos = document.querySelectorAll(".bg-video");
 		videos.forEach(video => {
 			video.playbackRate = 0.3;
 		});
@@ -182,59 +186,52 @@
 			};
 		}
 
+		function changeHologram(videoFile) {
+			const video = document.getElementById("hologramVideo");
+
+			video.pause();
+
+			video.src = videoFile;
+
+			video.load();
+
+			video.play().catch(() => { });
+		}
 
 		// 🧠 AI Simulation + Video Switch
 		function analyze() {
-
 			const input = document.getElementById("symptoms").value.toLowerCase();
-			const resultDiv = document.getElementById("result");
-
-			if (input.trim() === "") {
-				resultDiv.innerHTML = "Please describe your symptoms.";
-				return;
-			}
+			const result = document.getElementById("result");
 
 			let explanation = "";
-			let videoFile = "clients/assets/default.mp4";
+			let video = "client/assets/default.mp4";
 
-			// ---- AI LOGIC ----
 			if (input.includes("chest") || input.includes("heart")) {
-
-				explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen supply. Clinical evaluation such as ECG is recommended.";
-				videoFile = "client/assets/heart.mp4";
-
-			} else if (input.includes("head") || input.includes("brain")) {
-
-				explanation = "Headache may result from neurological stress, dehydration, or vascular changes.";
-				videoFile = "client/assets/brain.mp4";
-
-			} else if (input.includes("lung") || input.includes("breath")) {
-
-				explanation = "Breathing difficulty may indicate pulmonary inflammation or airway obstruction.";
-				videoFile = "client/assets/lungs.mp4";
-
-			} else {
-
-				explanation = "Symptoms require further diagnostic evaluation to determine physiological causes.";
-				videoFile = "client/assets/default.mp4";
+				explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen circulation.";
+				video = "client/assets/heart.mp4";
 			}
 
-			// Display explanation
-			resultDiv.innerHTML = explanation;
+			else if (input.includes("head") || input.includes("brain")) {
+				explanation = "Headache may be related to neurological stress or vascular pressure.";
+				video = "client/assets/brain.mp4";
+			}
 
-			// 🔊 Speak explanation
+			else if (input.includes("lung") || input.includes("breath")) {
+				explanation = "Breathing difficulty may indicate pulmonary inflammation.";
+				video = "client/assets/lungs.mp4";
+			}
+
+			else {
+				explanation = "Symptoms require further diagnostic evaluation.";
+				video = "client/assets/default.mp4";
+			}
+
+			result.innerHTML = explanation;
+
 			speak(explanation);
 
-			// 🎥 Switch hologram videos
-			const videos = document.querySelectorAll(".ghost-video");
-
-			videos.forEach(video => {
-				video.src = videoFile;
-				video.load();
-				video.play();
-			});
+			changeHologram(video);
 		}
-
 
 		// 🔊 Text-to-Speech
 		function speak(text) {
