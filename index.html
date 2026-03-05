@@ -39,6 +39,7 @@
 
 		textarea {
 			width: 100%;
+			opacity: 0.8;
 			height: 120px;
 			padding: 15px;
 			border-radius: 8px;
@@ -82,7 +83,6 @@
 			margin-top: 20px;
 		}
 
-		/* Video container */
 		.ghost-video {
 			position: fixed;
 			right: 0;
@@ -90,7 +90,6 @@
 			min-width: 100%;
 			min-height: 100%;
 			z-index: -1;
-			/* Push video behind content */
 			object-fit: cover;
 		}
 
@@ -137,9 +136,23 @@
 	</div>
 
 	<footer>
-		Electronic Media & Multimedia Systems Project — 2026
+		Electronic Media & Multimedia Systems Project — 2026<br>
+		By ~Digital Minds Co.
 	</footer>
 	<script>
+		//make enter key send(analyze button)
+		document.addEventListener("keydown", function (event) {
+			if (event.key === "Enter") {
+				event.preventDefault();	//stop enter from creating a new line
+				document.getElementById("symptoms").blur(); //deselect textarea on pressing enter
+				analyze(); //call analyze function
+			}
+			//make shiftkey and enter to go new line in text area
+			if (event.shiftKey && event.key === "Enter") {
+				document.getElementById("symptoms").value += "\n";
+			}
+
+		})
 		// function reduce video play speed
 		const videos = document.querySelectorAll(".ghost-video");
 		videos.forEach(video => {
@@ -182,7 +195,7 @@
 			}
 
 			let explanation = "";
-			let videoFile = "assets/default.mp4";
+			let videoFile = "clients/assets/default.mp4";
 
 			// ---- AI LOGIC ----
 			if (input.includes("chest") || input.includes("heart")) {
