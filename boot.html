@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<title>MediScan Initializing</title>
+
+	<style>
+		body {
+			margin: 0;
+			font-family: monospace;
+			background: #020b14;
+			color: #00eaff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+		}
+
+		.container {
+			text-align: center;
+			width: 400px;
+		}
+
+		.progress {
+			width: 100%;
+			height: 20px;
+			background: #0c1f2e;
+			border-radius: 10px;
+			overflow: hidden;
+			margin-top: 20px;
+		}
+
+		.bar {
+			height: 100%;
+			width: 0%;
+			background: #00eaff;
+		}
+
+		#status {
+			margin-top: 15px;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="container">
+
+		<h2>MediScan System Boot</h2>
+
+		<div class="progress">
+			<div class="bar" id="bar"></div>
+		</div>
+
+		<p id="percent">0%</p>
+		<p id="status">Starting...</p>
+
+	</div>
+
+	<script>
+
+		let progress = 0;
+
+		const bar = document.getElementById("bar");
+		const percent = document.getElementById("percent");
+		const status = document.getElementById("status");
+
+		const interval = setInterval(function () {
+
+			progress++;
+
+			bar.style.width = progress + "%";
+			percent.innerText = progress + "%";
+
+			if (progress <= 40) {
+				status.innerText = "Initializing MediScan AI Engine...";
+			}
+
+			else if (progress <= 90) {
+				status.innerText = "Loading Holographic Diagnostics...";
+			}
+
+			else {
+				status.innerText = "Finalizing System Startup...";
+			}
+
+			if (progress >= 100) {
+
+				clearInterval(interval);
+
+				setTimeout(() => {
+					window.location.href = "home.html";
+				}, 400);
+
+			}
+
+		}, 30);
+
+	</script>
+
+</body>
+
+</html>
