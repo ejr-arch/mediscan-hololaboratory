@@ -1,5 +1,7 @@
 # MediScan HoloLaboratory
 
+![CI/CD Pipeline](https://github.com/ejr-arch/mediscan-hololaboratory/actions/workflows/main.yml/badge.svg)
+
 MediScan HoloLaboratory is a small **educational multimedia prototype** that demonstrates:
 
 - Text input + (browser) speech-to-text input
