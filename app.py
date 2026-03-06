@@ -32,7 +32,71 @@ def root_files(filename: str):
     return send_from_directory(".", filename)
 
 
+def _pexels_video_url(symptoms: str) -> str | None:
+    api_key = os.getenv("PEXELS_API_KEY")
+    if not api_key:
+        return None
+
+    base_url = "https://api.pexels.com/videos/search"
+    timeout_s = float(os.getenv("PEXELS_TIMEOUT_SECONDS", "10"))
+
+    # Very simple keyword extraction for search terms
+    text = symptoms.lower()
+    query = None
+    if "heart" in text or "chest" in text:
+        query = "heart"
+    elif "brain" in text or "head" in text:
+        query = "brain"
+    elif "lung" in text or "breath" in text or "breathing" in text:
+        query = "lungs"
+    elif "stomach" in text or "abdomen" in text:
+        query = "stomach"
+    elif "eye" in text or "vision" in text:
+        query = "eye"
+    elif "skin" in text or "rash" in text:
+        query = "skin"
+    else:
+        query = "medical"
+
+    try:
+        resp = requests.get(
+            base_url,
+            headers={"Authorization": api_key},
+            params={"query": query, "per_page": 1},
+            timeout=(3.0, timeout_s),
+        )
+        if resp.status_code != 200:
+            return None
+
+        data = resp.json()
+        videos = data.get("videos", [])
+        if not videos:
+            return None
+
+        # Prefer a web-friendly file; fallback to first video
+        video = videos[0]
+        video_files = video.get("video_files", [])
+        for vf in video_files:
+            if vf.get("quality") == "hd" and vf.get("file_type") == "video/mp4":
+                return vf["link"]
+        for vf in video_files:
+            if vf.get("file_type") == "video/mp4":
+                return vf["link"]
+        return None
+    except Exception:
+        return None
+
+
 def _choose_video(symptoms: str) -> str:
+    # Try Pexels first
+    remote = _pexels_video_url(symptoms)
+    if remote:
+        return remote
+    # Fallback to local assets
+    return _local_video_url(symptoms)
+
+
+def _local_video_url(symptoms: str) -> str:
     text = (symptoms or "").lower()
 
     if "heart" in text or "chest" in text:

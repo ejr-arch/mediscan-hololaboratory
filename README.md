@@ -142,6 +142,22 @@ You can configure the backend with environment variables:
 - **`OLLAMA_MODEL`** (default: `llama3.2`)
 - **`OLLAMA_TIMEOUT_SECONDS`** (default: `20`)
 
+### Optional: Enable free stock videos via Pexels
+
+1. Sign up for a free Pexels API key: https://www.pexels.com/api/
+2. Set the environment variable:
+
+```bash
+export PEXELS_API_KEY=your_key_here
+```
+
+You can configure the backend with environment variables:
+
+- **`PEXELS_API_KEY`** (required to enable remote videos)
+- **`PEXELS_TIMEOUT_SECONDS`** (default: `10`)
+
+If the Pexels API is unavailable or no matching video is found, the app will fall back to the local videos in `client/assets/`.
+
 ## Browser requirements / notes
 
 - Speech-to-text uses the **Web Speech API** and works best on Chromium-based browsers.
