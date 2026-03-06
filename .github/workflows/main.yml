@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-python-version: '3.10'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
@@ -33,6 +33,9 @@ jobs:
 
     - name: Check Python Syntax
       run: python -m py_compile app.py
+
+    - name: Import app module
+      run: python -c "import app"
 
     - name: Validate HTML/JS/CSS (Basic)
       run: |

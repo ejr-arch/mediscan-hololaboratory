@@ -81,14 +81,17 @@ Use any static file server (VSCode Live Server, nginx, etc.) and open `index.htm
 
 ## Run (optional Flask API)
 
-`app.py` can serve the whole demo (pages + assets) and provides an endpoint that maps symptom keywords to an explanation + video.
+`app.py` can serve the whole demo (pages + assets) and provides an endpoint that maps symptoms to an explanation + video.
+
+If you have **Ollama** running locally, the backend will use a **free local LLM** to generate explanations for a wide range of symptoms.
+If Ollama is not available, the backend will fall back to the built-in rule-based explanation.
 
 ### Install
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install flask
+pip install -r requirements.txt
 ```
 
 ### Start
@@ -121,6 +124,23 @@ Response JSON:
 ```
 
 Note: The frontend will try the backend first, and will fall back to local rule logic if the backend isn’t running.
+
+### Optional: Enable LLM responses with Ollama (free, local)
+
+1. Install Ollama: https://ollama.com
+2. Pull a model, for example:
+
+```bash
+ollama pull llama3.2
+```
+
+3. Start the Ollama service (it typically listens on `http://127.0.0.1:11434`).
+
+You can configure the backend with environment variables:
+
+- **`OLLAMA_URL`** (default: `http://127.0.0.1:11434`)
+- **`OLLAMA_MODEL`** (default: `llama3.2`)
+- **`OLLAMA_TIMEOUT_SECONDS`** (default: `20`)
 
 ## Browser requirements / notes
 
