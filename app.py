@@ -33,7 +33,8 @@ def root_files(filename: str):
 
 
 def _pexels_video_url(symptoms: str) -> str | None:
-    api_key = os.getenv("PEXELS_API_KEY")
+    api_key = os.getenv(
+        "9n29FMV7ipf9Jpe7aJMEoJiOzOr3ryqNXHhwMc3xohPCOKY0RMnjez05")
     if not api_key:
         return None
 
