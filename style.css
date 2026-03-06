@@ -90,6 +90,14 @@
 			border-radius: 10px;
 		}
 
+		#listeningStatus {
+			margin-top: 10px;
+			min-height: 1.2em;
+			font-size: 0.95rem;
+			opacity: 0.8;
+			color: #00e0ff;
+		}
+
 		footer {
 			margin-top: 60px;
 			font-size: 0.8rem;

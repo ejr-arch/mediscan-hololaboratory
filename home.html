@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
 	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
-	<script src="script.js"></script>
+	<script src="script.js" defer></script>
 </head>
 
 <body>
@@ -18,12 +18,12 @@
 	<div class="container">
 
 		<h2>🎤 Describe Your Symptoms</h2>
-
-		<textarea id="symptoms" placeholder="Click microphone or type symptoms..."></textarea>
+		<label for="symptoms" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">Describe your symptoms</label>
+		<textarea id="symptoms" placeholder="Click microphone or type symptoms..." aria-describedby="listeningStatus"></textarea>
 		<br>
-
-		<button onclick="startSpeech()">🎤 Start Voice Input</button>
+		<button onclick="startSpeech()" aria-describedby="listeningStatus">🎤 Start Voice Input</button>
 		<button onclick="analyze()">🧠 Analyze</button>
+		<div id="listeningStatus" role="status" aria-live="polite"></div>
 
 		<div class="output" id="result">
 			AI explanation will appear here...
@@ -32,7 +32,7 @@
 			<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
 		</div>
 		<div class="hologram-container">
-			<video id="hologramVideo" autoplay loop muted playsinline src="client/assets/none.mp4"></video>
+			<video id="hologramVideo" autoplay loop muted playsinline src="client/assets/default.mp4"></video>
 		</div>
 
 	</div>

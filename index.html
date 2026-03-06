@@ -6,99 +6,7 @@
 	<title>MediScan Login</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
-
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-			font-family: Arial, Helvetica, sans-serif;
-		}
-
-		body {
-			height: 100vh;
-			overflow: hidden;
-			color: white;
-		}
-
-		/* Background Video */
-
-		video {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-			z-index: -1;
-			filter: brightness(40%);
-		}
-
-		/* Center Container */
-
-		.login-container {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 350px;
-			padding: 40px;
-			background: rgba(0, 0, 0, 0.55);
-			border-radius: 12px;
-			backdrop-filter: blur(10px);
-			text-align: center;
-			box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-		}
-
-		h1 {
-			margin-bottom: 25px;
-			letter-spacing: 2px;
-			color: #00eaff;
-		}
-
-		/* Inputs */
-
-		input {
-			width: 100%;
-			padding: 12px;
-			margin: 12px 0;
-			border: none;
-			border-radius: 5px;
-			background: #1b1b1b;
-			color: white;
-			font-size: 14px;
-			outline: none;
-		}
-
-		input:focus {
-			border: 1px solid #00eaff;
-		}
-
-		/* Button */
-
-		button {
-			width: 100%;
-			padding: 12px;
-			margin-top: 15px;
-			border: none;
-			border-radius: 5px;
-			background: #00eaff;
-			color: black;
-			font-weight: bold;
-			cursor: pointer;
-			transition: .3s;
-		}
-
-		button:hover {
-			background: #00c7d6;
-		}
-
-		#error {
-			margin-top: 10px;
-			color: #ff4d4d;
-			font-size: 14px;
-		}
-	</style>
+	<link rel="stylesheet" href="login.css">
 </head>
 
 <body>
@@ -125,38 +33,7 @@
 		</form>
 
 	</div>
-
-	<script>
-		//reduce playback speed
-		const videos = document.querySelectorAll("video");
-		videos.forEach(video => {
-			video.playbackRate = 0.3;
-		});
-
-		const form = document.getElementById("loginForm");
-
-		form.addEventListener("submit", function (e) {
-
-			e.preventDefault();
-
-			const username = document.getElementById("username").value;
-			const password = document.getElementById("password").value;
-
-			/* Demo Validation */
-
-			if (username === "admin" && password === "mediscan") {
-
-				window.location.href = "boot.html";
-
-			} else {
-
-				document.getElementById("error").textContent = "Invalid login credentials";
-
-			}
-
-		});
-
-	</script>
+	<script src="login.js" defer></script>
 
 </body>
 
