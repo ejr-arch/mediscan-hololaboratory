@@ -68,46 +68,70 @@
 				recognition.onend = () => listeningEl.textContent = "";
 			};
 
-			// LOCAL ANALYSIS
-			function localAnalyze(input) {
-				let explanation = "Symptoms require further diagnostic evaluation.";
+			// LOCAL ANALYSIS WITH MULTIPLE SYMPTOMS
+			function analyzeSymptomsList(inputText) {
+				const symptoms = inputText.split(',').map(s => s.trim().toLowerCase());
+				let explanation = "";
 				let video = "client/assets/default.mp4";
 				let bodyPart = "general";
 
-				if (input.includes("chest") || input.includes("heart")) {
-					explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen circulation.";
-					video = "client/assets/heart.mp4";
-					bodyPart = "chest";
-				} else if (input.includes("head") || input.includes("brain")) {
-					explanation = "Headache may be related to neurological stress or vascular pressure.";
-					video = "client/assets/brain.mp4";
-					bodyPart = "head";
-				} else if (input.includes("lung") || input.includes("breath")) {
-					explanation = "Breathing difficulty may indicate pulmonary inflammation.";
-					video = "client/assets/lungs.mp4";
-					bodyPart = "lungs";
-				}
+				const symptomMap = [
+					{keywords: ["chest", "heart", "palpitations", "angina"], part: "chest", video: "client/assets/heart.mp4", text: "Chest pain may indicate cardiovascular strain."},
+					{keywords: ["head", "brain", "headache", "migraine", "dizziness"], part: "head", video: "client/assets/brain.mp4", text: "Headache or dizziness may indicate neurological stress."},
+					{keywords: ["lung", "breath", "cough", "wheeze"], part: "lungs", video: "client/assets/lungs.mp4", text: "Breathing difficulties may indicate pulmonary inflammation."},
+					{keywords: ["stomach", "abdomen", "nausea", "vomit", "cramps"], part: "stomach", video: "client/assets/stomach.mp4", text: "Stomach discomfort may indicate digestive issues."},
+					{keywords: ["leg", "foot", "knee", "joint pain", "swelling"], part: "leg", video: "client/assets/leg.mp4", text: "Pain in legs or joints may indicate musculoskeletal issues."},
+					{keywords: ["back", "spine", "lower back pain", "sciatica"], part: "back", video: "client/assets/back.mp4", text: "Back pain may indicate muscular strain or spinal issues."},
+					{keywords: ["eye", "vision", "blurred vision", "red eye"], part: "eye", video: "client/assets/eye.mp4", text: "Eye symptoms may indicate visual or ocular issues."},
+					{keywords: ["ear", "hearing", "tinnitus", "earache"], part: "ear", video: "client/assets/ear.mp4", text: "Ear problems may indicate auditory or infection issues."},
+					{keywords: ["throat", "sore throat", "swallow", "hoarseness"], part: "throat", video: "client/assets/throat.mp4", text: "Throat discomfort may indicate infection or irritation."},
+					{keywords: ["nose", "sinus", "runny nose", "congestion"], part: "nose", video: "client/assets/nose.mp4", text: "Nasal symptoms may indicate sinus or respiratory issues."},
+					{keywords: ["fever", "chills", "sweat", "temperature"], part: "general", video: "client/assets/fever.mp4", text: "Fever may indicate infection or inflammation."},
+					{keywords: ["fatigue", "tired", "weakness"], part: "general", video: "client/assets/fatigue.mp4", text: "Fatigue may indicate systemic or lifestyle-related issues."},
+					{keywords: ["skin", "rash", "itch", "blister"], part: "skin", video: "client/assets/skin.mp4", text: "Skin symptoms may indicate dermatological issues."},
+					{keywords: ["hand", "arm", "wrist", "elbow"], part: "arm", video: "client/assets/arm.mp4", text: "Pain in arms or hands may indicate musculoskeletal issues."},
+					{keywords: ["anxiety", "stress", "nervous"], part: "general", video: "client/assets/brain.mp4", text: "Mental stress or anxiety may impact overall health."},
+					{keywords: ["constipation", "diarrhea", "bloating"], part: "stomach", video: "client/assets/stomach.mp4", text: "Digestive irregularities may indicate GI issues."},
+					{keywords: ["bleeding", "bruise", "hematoma"], part: "general", video: "client/assets/blood.mp4", text: "Bleeding or bruising may indicate circulatory or clotting issues."},
+					{keywords: ["allergy", "sneeze", "itchy eyes"], part: "general", video: "client/assets/allergy.mp4", text: "Allergic reactions may affect multiple body systems."},
+					{keywords: ["depression", "low mood", "sad"], part: "general", video: "client/assets/brain.mp4", text: "Mood changes may indicate mental health concerns."},
+					{keywords: ["weight", "loss", "gain", "appetite"], part: "stomach", video: "client/assets/stomach.mp4", text: "Changes in weight or appetite may indicate metabolic issues."},
+				];
+
+				symptoms.forEach(symptom => {
+					let matched = false;
+					for (const map of symptomMap) {
+						if (map.keywords.some(k => symptom.includes(k))) {
+							explanation += map.text + "\n";
+							video = map.video;
+							bodyPart = map.part;
+							matched = true;
+							break;
+						}
+					}
+					if (!matched) explanation += `Symptom "${symptom}" requires further evaluation.\n`;
+				});
+
 				return {explanation, video, bodyPart};
 			}
 
 			// ANALYZE FUNCTION
 			window.analyze = () => {
-				const inputRaw = symptomsEl.value.trim().toLowerCase();
+				const inputRaw = symptomsEl.value.trim();
 				if (!inputRaw) {
 					alert("Please describe your symptoms first.");
 					return;
 				}
-				const {explanation, video, bodyPart} = localAnalyze(inputRaw);
-				// store for results page
+				const {explanation, video, bodyPart} = analyzeSymptomsList(inputRaw);
+
 				localStorage.setItem("mediscan_explanation", explanation);
 				localStorage.setItem("mediscan_video", video);
 				localStorage.setItem("mediscan_bodypart", bodyPart);
-				// redirect to results page
+
 				window.location.href = "results.html";
 			};
 		});
 	</script>
-
 </body>
 
 </html>
