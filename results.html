@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<title>MediScan Diagnostic Result</title>
+
+	<style>
+		body {
+			margin: 0;
+			background: black;
+			overflow: hidden;
+			font-family: Arial, Helvetica, sans-serif;
+			color: white;
+		}
+
+		/* Fullscreen medical video */
+
+		#videoContainer {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+
+		#resultVideo {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			opacity: 0;
+			animation: fadeIn 1.5s forwards;
+		}
+
+		@keyframes fadeIn {
+			to {
+				opacity: 1;
+			}
+		}
+
+		/* subtitle area */
+
+		#subtitleBox {
+			position: absolute;
+			bottom: 40px;
+			width: 100%;
+			text-align: center;
+			font-size: 28px;
+			background: rgba(0, 0, 0, 0.45);
+			padding: 20px;
+		}
+
+		/* MediScan label */
+
+		#label {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			font-size: 18px;
+			letter-spacing: 2px;
+			color: #00eaff;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div id="videoContainer">
+
+		<video id="resultVideo" autoplay muted loop></video>
+
+	</div>
+
+	<div id="label">MEDISCAN DIAGNOSTIC OUTPUT</div>
+
+	<div id="subtitleBox">
+		<span id="subtitle"></span>
+	</div>
+
+	<script>
+
+		const explanation = localStorage.getItem("mediscan_explanation");
+		const bodyPart = localStorage.getItem("mediscan_bodypart");
+
+		const video = document.getElementById("resultVideo");
+		const subtitle = document.getElementById("subtitle");
+
+		/* video selection */
+
+		let videoFile = "client/assets/default.mp4";
+
+		if (bodyPart === "head") videoFile = "client/assets/brain.mp4";
+		if (bodyPart === "chest") videoFile = "client/assets/heart.mp4";
+		if (bodyPart === "lungs") videoFile = "client/assets/lungs.mp4";
+		if (bodyPart === "stomach") videoFile = "client/assets/stomach.mp4";
+
+		video.src = videoFile;
+
+		/* typewriter subtitle */
+
+		function typeWriter(text) {
+
+			let i = 0;
+
+			function typing() {
+
+				if (i < text.length) {
+
+					subtitle.innerHTML += text.charAt(i);
+					i++;
+
+					setTimeout(typing, 25);
+
+				}
+
+			}
+
+			typing();
+
+		}
+
+		typeWriter(explanation);
+
+		/* AI voice narration */
+
+		function speak(text) {
+
+			if (!('speechSynthesis' in window)) return;
+
+			const speech = new SpeechSynthesisUtterance(text);
+
+			speech.lang = "en-US";
+			speech.rate = 1;
+			speech.pitch = 1;
+
+			window.speechSynthesis.speak(speech);
+
+		}
+
+		setTimeout(() => {
+			speak(explanation);
+		}, 500);
+		document.addEventListener("DOMContentLoaded", () => {
+
+			const explanation = localStorage.getItem("mediscan_explanation");
+			const videoFile = localStorage.getItem("mediscan_video");
+
+			const video = document.getElementById("resultVideo");
+			const subtitle = document.getElementById("subtitle");
+
+			/* load video */
+
+			if (videoFile) {
+				video.src = videoFile;
+				video.load();
+				video.play().catch(() => { });
+			}
+
+			/* display subtitle */
+
+			if (subtitle && explanation) {
+				subtitle.textContent = explanation;
+			}
+
+			/* voice narration */
+
+			function speak(text) {
+
+				if (!('speechSynthesis' in window)) return;
+
+				const speech = new SpeechSynthesisUtterance(text);
+
+				speech.lang = "en-US";
+				speech.rate = 1;
+				speech.pitch = 1;
+
+				window.speechSynthesis.cancel();
+				window.speechSynthesis.speak(speech);
+
+			}
+
+			if (explanation) {
+				speak(explanation);
+			}
+
+
+			/* RETURN TO HOME PAGE */
+
+			function goHome() {
+
+				window.speechSynthesis.cancel();
+
+				window.location.href = "home.html";
+
+			}
+
+
+			/* ESC OR ENTER KEY */
+
+			document.addEventListener("keydown", function (event) {
+
+				if (event.key === "Escape" || event.key === "Enter") {
+
+					goHome();
+
+				}
+
+			});
+
+		});
+
+	</script>
+
+</body>
+
+</html>
