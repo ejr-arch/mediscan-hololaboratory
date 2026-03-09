@@ -7,7 +7,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
 	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
-	<script src="script.js" defer></script>
 </head>
 
 <body>
@@ -16,34 +15,99 @@
 	<p>AI-Powered Multimedia Medical Visualization System</p>
 
 	<div class="container">
-
 		<h2>🎤 Describe Your Symptoms</h2>
-		<label for="symptoms"
-			style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">Describe
-			your symptoms</label>
+		<label for="symptoms" style="position:absolute;left:-10000px;">Describe your symptoms</label>
 		<textarea id="symptoms" placeholder="Click microphone or type symptoms..."
 			aria-describedby="listeningStatus"></textarea>
 		<br>
-		<button onclick="startSpeech()" aria-describedby="listeningStatus">🎤 Start Voice Input</button>
+		<button onclick="startSpeech()">🎤 Start Voice Input</button>
 		<button onclick="analyze()">🧠 Analyze</button>
 		<div id="listeningStatus" role="status" aria-live="polite"></div>
-
-		<!--	<div class="output" id="result">
-			AI explanation will appear here...
-		</div>
-		<div>
-			<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
-		</div>
-		<div class="hologram-container">
-			<video id="hologramVideo" autoplay loop muted playsinline src="client/assets/default.mp4"></video>
-</div>
-
 	</div>
--->
-		<footer>
-			Electronic Media & Multimedia Systems Project — 2026<br>
-			By ~Digital Minds Co.
-		</footer>
+	<div>
+		<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
+	</div>
+
+	<footer>
+		Electronic Media & Multimedia Systems Project — 2026<br>
+		By ~Digital Minds Co.
+	</footer>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const symptomsEl = document.getElementById("symptoms");
+			const listeningEl = document.getElementById("listeningStatus");
+
+			// ENTER KEY SUBMIT
+			document.addEventListener("keydown", (event) => {
+				if (!symptomsEl || event.target !== symptomsEl) return;
+				if (event.shiftKey && event.key === "Enter") return;
+				if (event.key === "Enter") {
+					event.preventDefault();
+					symptomsEl.blur();
+					analyze();
+				}
+			});
+
+			// VOICE INPUT
+			window.startSpeech = () => {
+				if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+					alert("Speech recognition not supported. Use Chrome.");
+					return;
+				}
+				const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+				const recognition = new SpeechRecognition();
+				recognition.lang = "en-US";
+				recognition.start();
+				listeningEl.textContent = "Listening...";
+				recognition.onresult = (event) => {
+					symptomsEl.value = event.results[0][0].transcript;
+					listeningEl.textContent = "";
+				};
+				recognition.onerror = () => listeningEl.textContent = "";
+				recognition.onend = () => listeningEl.textContent = "";
+			};
+
+			// LOCAL ANALYSIS
+			function localAnalyze(input) {
+				let explanation = "Symptoms require further diagnostic evaluation.";
+				let video = "client/assets/default.mp4";
+				let bodyPart = "general";
+
+				if (input.includes("chest") || input.includes("heart")) {
+					explanation = "Chest pain may indicate cardiovascular strain or reduced oxygen circulation.";
+					video = "client/assets/heart.mp4";
+					bodyPart = "chest";
+				} else if (input.includes("head") || input.includes("brain")) {
+					explanation = "Headache may be related to neurological stress or vascular pressure.";
+					video = "client/assets/brain.mp4";
+					bodyPart = "head";
+				} else if (input.includes("lung") || input.includes("breath")) {
+					explanation = "Breathing difficulty may indicate pulmonary inflammation.";
+					video = "client/assets/lungs.mp4";
+					bodyPart = "lungs";
+				}
+				return {explanation, video, bodyPart};
+			}
+
+			// ANALYZE FUNCTION
+			window.analyze = () => {
+				const inputRaw = symptomsEl.value.trim().toLowerCase();
+				if (!inputRaw) {
+					alert("Please describe your symptoms first.");
+					return;
+				}
+				const {explanation, video, bodyPart} = localAnalyze(inputRaw);
+				// store for results page
+				localStorage.setItem("mediscan_explanation", explanation);
+				localStorage.setItem("mediscan_video", video);
+				localStorage.setItem("mediscan_bodypart", bodyPart);
+				// redirect to results page
+				window.location.href = "results.html";
+			};
+		});
+	</script>
+
 </body>
 
 </html>
