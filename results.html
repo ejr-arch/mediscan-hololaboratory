@@ -68,38 +68,26 @@
 
 	<script>
 		document.addEventListener("DOMContentLoaded", () => {
-			// --- Get stored results ---
+
 			const explanation = localStorage.getItem("mediscan_explanation") || "No explanation available.";
-			const bodyPart = localStorage.getItem("mediscan_bodypart") || "general";
+			const videoFile = localStorage.getItem("mediscan_video") || "client/assets/default.mp4";
 
 			const videoEl = document.getElementById("resultVideo");
 			const subtitleEl = document.getElementById("subtitle");
-
-			// --- Select video based on body part ---
-			let videoFile = "client/assets/default.mp4";
-			if (bodyPart === "head") videoFile = "client/assets/brain.mp4";
-			if (bodyPart === "chest") videoFile = "client/assets/heart.mp4";
-			if (bodyPart === "lungs") videoFile = "client/assets/lungs.mp4";
-			if (bodyPart === "stomach") videoFile = "client/assets/stomach.mp4";
 
 			videoEl.src = videoFile;
 			videoEl.load();
 			videoEl.play().catch(() => { });
 
-			// --- Show subtitle ---
 			subtitleEl.textContent = explanation;
 
-			// --- Text-to-Speech ---
 			if ('speechSynthesis' in window) {
 				const speech = new SpeechSynthesisUtterance(explanation);
 				speech.lang = "en-US";
-				speech.rate = 1;
-				speech.pitch = 1;
 				window.speechSynthesis.cancel();
 				window.speechSynthesis.speak(speech);
 			}
 
-			// --- ESC or Enter fallback to go back to index ---
 			document.addEventListener("keydown", (event) => {
 				if (event.key === "Escape" || event.key === "Enter") {
 					window.speechSynthesis.cancel();
@@ -108,7 +96,6 @@
 			});
 		});
 	</script>
-
 </body>
 
 </html>
