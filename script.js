@@ -1,202 +1,145 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const symptomsEl = document.getElementById("symptoms");
-  const listeningEl = document.getElementById("listeningStatus");
+const inputEl = document.getElementById("symptoms");
+const listeningEl = document.getElementById("listeningStatus");
 
-  // ENTER KEY SUBMIT
-  document.addEventListener("keydown", (event) => {
-    if (!symptomsEl || event.target !== symptomsEl) return;
-    if (event.shiftKey && event.key === "Enter") return;
-    if (event.key === "Enter") {
-      event.preventDefault();
-      symptomsEl.blur();
-      analyze();
-    }
-  });
+document.addEventListener("keydown", function (event) {
+  if (!inputEl || event.target !== inputEl) return;
+  if (event.shiftKey && event.key === "Enter") return;
+  if (event.key === "Enter") {
+    event.preventDefault();
+    window.analyze();
+  }
+});
 
-  // VOICE INPUT
-  window.startSpeech = () => {
-    if (
-      !("webkitSpeechRecognition" in window) &&
-      !("SpeechRecognition" in window)
-    ) {
-      alert("Speech recognition not supported. Use Chrome.");
-      return;
-    }
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.start();
-    listeningEl.textContent = "Listening...";
-    recognition.onresult = (event) => {
-      symptomsEl.value = event.results[0][0].transcript;
-      listeningEl.textContent = "";
-    };
-    recognition.onerror = () => (listeningEl.textContent = "");
-    recognition.onend = () => (listeningEl.textContent = "");
-  };
+window.selectTopic = function (topic) {
+  const input = document.getElementById("symptoms");
+  input.value = topic.toLowerCase();
+  window.analyze();
+};
 
-  // LOCAL ANALYSIS WITH MULTIPLE SYMPTOMS
-  function analyzeSymptomsList(inputText) {
-    const symptoms = inputText.split(",").map((s) => s.trim().toLowerCase());
-    let explanation = "";
-    let video = "client/assets/default.mp4";
-    let bodyPart = "general";
-
-    const symptomMap = [
-      {
-        keywords: ["chest", "heart", "palpitations", "angina"],
-        part: "chest",
-        video: "client/assets/heart.mp4",
-        text: "Chest pain may indicate cardiovascular strain.",
-      },
-      {
-        keywords: ["head", "brain", "headache", "migraine", "dizziness"],
-        part: "head",
-        video: "client/assets/brain.mp4",
-        text: "Headache or dizziness may indicate neurological stress.",
-      },
-      {
-        keywords: ["lung", "breath", "cough", "wheeze"],
-        part: "lungs",
-        video: "client/assets/lungs.mp4",
-        text: "Breathing difficulties may indicate pulmonary inflammation.",
-      },
-      {
-        keywords: ["stomach", "abdomen", "nausea", "vomit", "cramps"],
-        part: "stomach",
-        video: "client/assets/stomach.mp4",
-        text: "Stomach discomfort may indicate digestive issues.",
-      },
-      {
-        keywords: ["leg", "foot", "knee", "joint pain", "swelling"],
-        part: "leg",
-        video: "client/assets/leg.mp4",
-        text: "Pain in legs or joints may indicate musculoskeletal issues.",
-      },
-      {
-        keywords: ["back", "spine", "lower back pain", "sciatica"],
-        part: "back",
-        video: "client/assets/back.mp4",
-        text: "Back pain may indicate muscular strain or spinal issues.",
-      },
-      {
-        keywords: ["eye", "vision", "blurred vision", "red eye"],
-        part: "eye",
-        video: "client/assets/eye.mp4",
-        text: "Eye symptoms may indicate visual or ocular issues.",
-      },
-      {
-        keywords: ["ear", "hearing", "tinnitus", "earache"],
-        part: "ear",
-        video: "client/assets/ear.mp4",
-        text: "Ear problems may indicate auditory or infection issues.",
-      },
-      {
-        keywords: ["throat", "sore throat", "swallow", "hoarseness"],
-        part: "throat",
-        video: "client/assets/throat.mp4",
-        text: "Throat discomfort may indicate infection or irritation.",
-      },
-      {
-        keywords: ["nose", "sinus", "runny nose", "congestion"],
-        part: "nose",
-        video: "client/assets/nose.mp4",
-        text: "Nasal symptoms may indicate sinus or respiratory issues.",
-      },
-      {
-        keywords: ["fever", "chills", "sweat", "temperature"],
-        part: "general",
-        video: "client/assets/fever.mp4",
-        text: "Fever may indicate infection or inflammation.",
-      },
-      {
-        keywords: ["fatigue", "tired", "weakness"],
-        part: "general",
-        video: "client/assets/fatigue.mp4",
-        text: "Fatigue may indicate systemic or lifestyle-related issues.",
-      },
-      {
-        keywords: ["skin", "rash", "itch", "blister"],
-        part: "skin",
-        video: "client/assets/skin.mp4",
-        text: "Skin symptoms may indicate dermatological issues.",
-      },
-      {
-        keywords: ["hand", "arm", "wrist", "elbow"],
-        part: "arm",
-        video: "client/assets/arm.mp4",
-        text: "Pain in arms or hands may indicate musculoskeletal issues.",
-      },
-      {
-        keywords: ["anxiety", "stress", "nervous"],
-        part: "general",
-        video: "client/assets/brain.mp4",
-        text: "Mental stress or anxiety may impact overall health.",
-      },
-      {
-        keywords: ["constipation", "diarrhea", "bloating"],
-        part: "stomach",
-        video: "client/assets/stomach.mp4",
-        text: "Digestive irregularities may indicate GI issues.",
-      },
-      {
-        keywords: ["bleeding", "bruise", "hematoma"],
-        part: "general",
-        video: "client/assets/blood.mp4",
-        text: "Bleeding or bruising may indicate circulatory or clotting issues.",
-      },
-      {
-        keywords: ["allergy", "sneeze", "itchy eyes"],
-        part: "general",
-        video: "client/assets/allergy.mp4",
-        text: "Allergic reactions may affect multiple body systems.",
-      },
-      {
-        keywords: ["depression", "low mood", "sad"],
-        part: "general",
-        video: "client/assets/brain.mp4",
-        text: "Mood changes may indicate mental health concerns.",
-      },
-      {
-        keywords: ["weight", "loss", "gain", "appetite"],
-        part: "stomach",
-        video: "client/assets/stomach.mp4",
-        text: "Changes in weight or appetite may indicate metabolic issues.",
-      },
-    ];
-
-    symptoms.forEach((symptom) => {
-      let matched = false;
-      for (const map of symptomMap) {
-        if (map.keywords.some((k) => symptom.includes(k))) {
-          explanation += map.text + "\n";
-          video = map.video;
-          bodyPart = map.part;
-          matched = true;
-          break;
-        }
-      }
-      if (!matched)
-        explanation += `Symptom "${symptom}" requires further evaluation.\n`;
-    });
-
-    return { explanation, video, bodyPart };
+window.startSpeech = function () {
+  if (
+    !("webkitSpeechRecognition" in window) &&
+    !("SpeechRecognition" in window)
+  ) {
+    alert("Speech recognition not supported. Use Chrome.");
+    return;
   }
 
-  // ANALYZE FUNCTION
-  window.analyze = () => {
-    const inputRaw = symptomsEl.value.trim();
-    if (!inputRaw) {
-      alert("Please describe your symptoms first.");
-      return;
-    }
-    const { explanation, video, bodyPart } = analyzeSymptomsList(inputRaw);
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
 
-    localStorage.setItem("mediscan_explanation", explanation);
-    localStorage.setItem("mediscan_video", video);
-    localStorage.setItem("mediscan_bodypart", bodyPart);
+  recognition.lang = "en-US";
+  recognition.start();
 
-    window.location.href = "results.html";
+  listeningEl.textContent = "Listening...";
+
+  recognition.onresult = function (event) {
+    inputEl.value = event.results[0][0].transcript.toLowerCase();
+    listeningEl.textContent = "";
   };
-});
+
+  recognition.onerror = function () {
+    listeningEl.textContent = "";
+  };
+
+  recognition.onend = function () {
+    listeningEl.textContent = "";
+  };
+};
+
+function localAnalyze(input) {
+  let explanation =
+    "The selected anatomical topic requires further visualization.";
+  let video = "client/assets/default.mp4";
+  let bodyPart = "general";
+
+  if (
+    input.includes("heart") ||
+    input.includes("cardiovascular") ||
+    input.includes("circulation")
+  ) {
+    explanation =
+      "The cardiovascular system circulates blood throughout the body. The heart pumps oxygenated blood to tissues and returns deoxygenated blood to the lungs.";
+    video = "client/assets/heart.mp4";
+    bodyPart = "heart";
+  } else if (
+    input.includes("brain") ||
+    input.includes("nervous") ||
+    input.includes("neural")
+  ) {
+    explanation =
+      "The nervous system controls body activities and processes information through neural networks located primarily in the brain and spinal cord.";
+    video = "client/assets/brain.mp4";
+    bodyPart = "brain";
+  } else if (
+    input.includes("lungs") ||
+    input.includes("respiratory") ||
+    input.includes("breathing")
+  ) {
+    explanation =
+      "The respiratory system allows oxygen intake and carbon dioxide removal through gas exchange in the lungs.";
+    video = "client/assets/lungs.mp4";
+    bodyPart = "lungs";
+  } else if (
+    input.includes("digestive") ||
+    input.includes("stomach") ||
+    input.includes("digestion")
+  ) {
+    explanation =
+      "The digestive system breaks down food into nutrients that the body can absorb and use for energy and growth.";
+    video = "client/assets/stomach.mp4";
+    bodyPart = "digestive";
+  } else if (
+    input.includes("skeletal") ||
+    input.includes("bones") ||
+    input.includes("skeleton")
+  ) {
+    explanation =
+      "The skeletal system provides structural support for the body and protects vital organs.";
+    video = "client/assets/skeleton.mp4";
+    bodyPart = "skeletal";
+  } else if (input.includes("muscle") || input.includes("muscular")) {
+    explanation =
+      "The muscular system allows movement of body parts through contraction and relaxation of muscles.";
+    video = "client/assets/muscles.mp4";
+    bodyPart = "muscles";
+  } else if (input.includes("eye") || input.includes("vision")) {
+    explanation =
+      "The eye captures light and converts it into signals that are interpreted by the brain to form visual perception.";
+    video = "client/assets/eye.mp4";
+    bodyPart = "eye";
+  } else if (input.includes("ear") || input.includes("hearing")) {
+    explanation =
+      "The ear detects sound waves and converts them into neural signals while also helping maintain body balance.";
+    video = "client/assets/ear.mp4";
+    bodyPart = "ear";
+  } else if (input.includes("blood")) {
+    explanation =
+      "Blood transports oxygen, nutrients, hormones and waste materials throughout the body.";
+    video = "client/assets/blood.mp4";
+    bodyPart = "blood";
+  }
+
+  return { explanation, video, bodyPart };
+}
+
+window.analyze = function () {
+  const inputRaw = document
+    .getElementById("symptoms")
+    .value.trim()
+    .toLowerCase();
+
+  if (!inputRaw) {
+    alert("Please enter an anatomical topic.");
+    return;
+  }
+
+  const result = localAnalyze(inputRaw);
+
+  localStorage.setItem("mediscan_explanation", result.explanation);
+  localStorage.setItem("mediscan_video", result.video);
+  localStorage.setItem("mediscan_bodypart", result.bodyPart);
+
+  window.location.href = "results.html";
+};

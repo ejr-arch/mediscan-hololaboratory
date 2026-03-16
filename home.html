@@ -18,12 +18,34 @@
 	<div class="container">
 		<h2>🎤 Describe Your Symptoms</h2>
 		<label for="symptoms" style="position:absolute;left:-10000px;">Describe your symptoms</label>
-		<textarea id="symptoms" placeholder="Click microphone or type symptoms..."
+		<textarea id="symptoms"
+			placeholder="Enter anatomical topic (e.g. cardiovascular system, brain activity)..."
 			aria-describedby="listeningStatus"></textarea>
 		<br>
 		<button onclick="startSpeech()">🎤 Start Voice Input</button>
 		<button onclick="analyze()">🧠 Analyze</button>
 		<div id="listeningStatus" role="status" aria-live="polite"></div>
+	</div>
+	<h3>Research Mode: Select Body System</h3>
+
+	<div class="research-panel">
+
+		<button onclick="selectTopic('cardiovascular system')">🫀 Cardiovascular System</button>
+
+		<button onclick="selectTopic('brain nervous system')">🧠 Nervous System</button>
+
+		<button onclick="selectTopic('respiratory system')">🫁 Respiratory System</button>
+
+		<button onclick="selectTopic('digestive system')">🍽 Digestive System</button>
+
+		<button onclick="selectTopic('skeletal system')">🦴 Skeletal System</button>
+
+		<button onclick="selectTopic('muscular system')">💪 Muscular System</button>
+
+		<button onclick="selectTopic('vision eye system')">👁 Vision System</button>
+
+		<button onclick="selectTopic('hearing ear system')">👂 Hearing System</button>
+
 	</div>
 	<div>
 		<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>

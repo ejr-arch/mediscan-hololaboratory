@@ -103,3 +103,30 @@
 			font-size: 0.8rem;
 			opacity: 0.6;
 		}
+
+		.research-panel {
+
+			margin-top: 20px;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 10px;
+
+		}
+
+		.research-panel button {
+
+			padding: 12px;
+			font-size: 16px;
+			cursor: pointer;
+			border: none;
+			border-radius: 8px;
+			background: #1f1f1f;
+			color: white;
+
+		}
+
+		.research-panel button:hover {
+
+			background: #0077ff;
+
+		}
