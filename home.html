@@ -1,61 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<title>MediScan | Multimedia Medical Visualizer</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
-	<script src="script.js"></script>
+  <meta charset="UTF-8">
+  <title>MediScan | AI Medical Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="client/assets/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="script.js" defer></script>
 </head>
-
 <body>
 
-	<h1>MediScan</h1>
-	<p>AI-Powered Multimedia Medical Visualization System</p>
+  <!-- Animated background elements -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="scan-line"></div>
 
-	<div class="container">
-		<h2>Describe the Anatomical Topic</h2>
-		<label for="symptoms" style="position:absolute;left:-10000px;">Describe your symptoms</label>
-		<textarea id="symptoms"
-			placeholder="Enter anatomical topic (e.g. cardiovascular system, brain activity)..."
-			aria-describedby="listeningStatus"></textarea>
-		<br>
-		<button onclick="startSpeech()">🎤 Start Voice Input</button>
-		<button onclick="analyze()">🧠 Analyze</button>
-		<div id="listeningStatus" role="status" aria-live="polite"></div>
-	</div>
-	<h3>Research Mode: Select Body System</h3>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="logo.png" class="logo" alt="MediScan Logo" onerror="this.style.display='none'">
+        <div class="logo-pulse"></div>
+      </div>
+      <div class="header-text">
+        <h1>MediScan</h1>
+        <p class="tagline">AI-Powered Multimedia Medical Visualization System</p>
+      </div>
+      <div class="header-badges">
+        <span class="badge"><i class="fa-solid fa-shield-heart"></i> Secure</span>
+        <span class="badge live"><i class="fa-solid fa-circle"></i> Live </span>
+      </div>
+    </div>
+    <!-- EKG line decoration -->
+    <div class="ekg-wrap">
+      <svg class="ekg-svg" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <polyline class="ekg-line" points="
+          0,30 100,30 130,30 145,5 160,55 175,10 190,50 205,30 300,30
+          400,30 430,30 445,5 460,55 475,10 490,50 505,30 600,30
+          700,30 730,30 745,5 760,55 775,10 790,50 805,30 900,30
+          1000,30 1030,30 1045,5 1060,55 1075,10 1090,50 1105,30 1200,30
+        "/>
+      </svg>
+    </div>
+  </header>
 
-	<div class="research-panel">
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="container">
 
-		<button onclick="selectTopic('cardiovascular system')">🫀 Cardiovascular System</button>
+    <!-- Symptom Input Card -->
+    <div class="card card-input">
+      <div class="card-header-bar">
+        <div class="card-icon"><i class="fa-solid fa-stethoscope"></i></div>
+        <h2>initiate your search</h2>
+      </div>
+      <div class="card-body">
+        <label for="symptoms" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">Describe your symptoms</label>
+        <div class="textarea-wrap">
+          <textarea id="symptoms"
+            placeholder="e.g. chest pain, shortness of breath, and dizziness..."
+            aria-describedby="listeningStatus"></textarea>
+        </div>
+        <div id="listeningStatus" role="status" aria-live="polite"></div>
+        <div class="buttons">
+          <button class="btn-voice" onclick="startSpeech()">
+            <i class="fa-solid fa-microphone"></i> Voice Input
+          </button>
+          <button class="btn-analyze" onclick="analyze()">
+            <i class="fa-solid fa-brain"></i> Analyze
+          </button>
+        </div>
+      </div>
+    </div>
 
-		<button onclick="selectTopic('brain nervous system')">🧠 Nervous System</button>
+    <!-- AI Diagnosis Card -->
+    <div class="card card-result">
+      <div class="card-header-bar">
+        <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+        <h2>AI Diagnosis</h2>
+        <div class="ai-indicator" id="aiIndicator"><span></span> Standby</div>
+      </div>
+      <div class="card-body">
+        <div class="output" id="result">
+          <div class="output-placeholder">
+            <i class="fa-solid fa-dna fa-spin-pulse"></i>
+            <p>AI medical explanation will appear here after analysis...</p>
+          </div>
+        </div>
+        <div class="result-meta" id="resultMeta" style="display:none;">
+          <span><i class="fa-solid fa-clock"></i> <span id="resultTime"></span></span>
+          <span><i class="fa-solid fa-microchip"></i> AI Engine v2.0</span>
+        </div>
+      </div>
+    </div>
 
-		<button onclick="selectTopic('respiratory system')">🫁 Respiratory System</button>
+    <!-- Medical Visualization Card -->
+    <div class="card card-visual">
+      <div class="card-header-bar">
+        <div class="card-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+        <h2>Medical Visualization</h2>
+      </div>
+      <div class="card-body">
+        <div class="video-wrap">
+          <div class="hologram-overlay"></div>
+          <div class="hologram-scanlines"></div>
+          <video id="hologramVideo" class="hologram-video" autoplay loop muted playsinline
+            src="client/assets/default.mp4"></video>
+          <div class="hologram-corner tl"></div>
+          <div class="hologram-corner tr"></div>
+          <div class="hologram-corner bl"></div>
+          <div class="hologram-corner br"></div>
+        </div>
+        <div class="organ-buttons">
+          <button class="organ-btn" onclick="changeOrgan('heart')">
+            <i class="fa-solid fa-heart"></i> Heart
+          </button>
+          <button class="organ-btn" onclick="changeOrgan('brain')">
+            <i class="fa-solid fa-brain"></i> Brain
+          </button>
+          <button class="organ-btn" onclick="changeOrgan('lungs')">
+            <i class="fa-solid fa-lungs"></i> Lungs
+          </button>
+          <button class="organ-btn" onclick="changeOrgan('default')">
+            <i class="fa-solid fa-circle-dot"></i> Default
+          </button>
+        </div>
+      </div>
+    </div>
 
-		<button onclick="selectTopic('digestive system')">🍽 Digestive System</button>
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-database"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">10+</span>
+          <span class="stat-label">Records Trained</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">&lt;5s</span>
+          <span class="stat-label">Analysis Speed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">HIPAA</span>
+          <span class="stat-label">Compliant</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-stethoscope"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">20+</span>
+          <span class="stat-label">Conditions</span>
+        </div>
+      </div>
+    </div>
 
-		<button onclick="selectTopic('skeletal system')">🦴 Skeletal System</button>
+  </div><!-- /container -->
 
-		<button onclick="selectTopic('muscular system')">💪 Muscular System</button>
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <strong>Medical Disclaimer:</strong> MediScan is an educational AI tool and does <em>not</em> replace
+    professional medical advice. Always consult a qualified healthcare provider for diagnosis and treatment.
+  </div>
 
-		<button onclick="selectTopic('vision eye system')">👁 Vision System</button>
-
-		<button onclick="selectTopic('hearing ear system')">👂 Hearing System</button>
-
-	</div>
-	<div>
-		<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
-	</div>
-
-	<footer>
-		Electronic Media & Multimedia Systems Project — 2026<br>
-		By ~Group 18.
-	</footer>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <i class="fa-solid fa-heart-pulse"></i> MediScan
+      </div>
+      <p>Electronic Media &amp; Multimedia Systems Project — 2026</p>
+      <p>Developed by <strong>Digital Minds Co. Group 18</strong></p>
+    </div>
+  </footer>
 
 </body>
-
 </html>
