@@ -1,61 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<title>MediScan | Multimedia Medical Visualizer</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
-	<script src="script.js"></script>
-</head>
+  <meta charset="UTF-8">
+  <title>MediScan | Multimedia Medical Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="client/assets/logo.png">
+  <style>
+    /* ─── KEYS (paste yours here if running as a static file) ─── */
+    /* See the script block below */
 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f141a;
+      color: #e8edf2;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 1.08rem;
+      padding: 40px 20px 60px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      color: #00e0ff;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    h1 span { color: #ffffff; }
+
+    body > p {
+      font-size: 1rem;
+      opacity: 0.55;
+      margin-bottom: 36px;
+    }
+
+    /* ── Input area ── */
+    .container { max-width: 820px; margin: 0 auto; }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #c8dff4;
+    }
+
+    label[for="symptoms"] { position: absolute; left: -9999px; }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 14px 16px;
+      border-radius: 6px;
+      border: 1px solid #2a3a50;
+      background: #131c28;
+      color: #e8edf2;
+      font-size: 1rem;
+      resize: vertical;
+      outline: none;
+    }
+    textarea:focus { border-color: #00e0ff; }
+    textarea::placeholder { color: #4a6070; }
+
+    .btn-row { margin-top: 12px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    button {
+      padding: 11px 26px;
+      border: none;
+      border-radius: 6px;
+      background: #00e0ff;
+      color: #0f141a;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #00b5cc; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Status lines */
+    #listeningStatus, #analyzeStatus {
+      margin-top: 10px;
+      min-height: 1.3em;
+      font-size: 0.9rem;
+      color: #00e0ff;
+      opacity: 0.85;
+    }
+
+    /* Progress bar */
+    #progress-wrap { margin-top: 10px; height: 3px; background: #1e2d40; border-radius: 2px; display: none; }
+    #progress-bar  { height: 100%; width: 0%; background: #00e0ff; border-radius: 2px; transition: width 0.35s; }
+
+    /* ── Explanation output ── */
+    #explanation-box {
+      display: none;
+      margin: 24px auto 0;
+      max-width: 820px;
+      text-align: left;
+      background: #131c28;
+      border: 1px solid #2a3a50;
+      border-radius: 8px;
+      padding: 22px 24px;
+    }
+    #explanation-box h3 {
+      font-size: 1.1rem;
+      color: #00e0ff;
+      margin-bottom: 10px;
+    }
+    #explanation-text {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #c8dff4;
+      white-space: pre-wrap;
+    }
+    #explanation-media {
+      margin-top: 14px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #2a3a50;
+      display: none;
+    }
+    .api-source {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: #4a6070;
+    }
+    .btn-results {
+      margin-top: 16px;
+      display: inline-block;
+    }
+
+    /* ── Section heading ── */
+    h3.section-label {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #c8dff4;
+      margin: 44px 0 16px;
+    }
+
+    /* ── System cards grid ── */
+    .systems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .sys-card {
+      background: #131c28;
+      border: 1px solid #2a3a50;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .sys-card:hover { border-color: #00e0ff; }
+
+    .card-media {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      background: #0c1520;
+      overflow: hidden;
+    }
+    .card-media video,
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* shimmer while loading */
+    .card-skeleton {
+      position: absolute;
+      inset: 0;
+      background: #1a2535;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      0%   { opacity: 0.6; }
+      50%  { opacity: 0.3; }
+      100% { opacity: 0.6; }
+    }
+    .card-skeleton.done { display: none; }
+    .card-src { position: absolute; bottom: 4px; right: 6px; font-size: 0.6rem; color: rgba(255,255,255,0.35); }
+
+    .card-body { padding: 12px 14px 14px; }
+    .card-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #00e0ff;
+      margin-bottom: 5px;
+    }
+    .card-desc { font-size: 0.88rem; color: #7a9ab8; line-height: 1.6; }
+    .card-cta  { margin-top: 10px; font-size: 0.8rem; color: #00e0ff; opacity: 0.7; }
+
+    /* ── Background video ── */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.12;
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.8rem;
+      opacity: 0.4;
+    }
+
+    @media (max-width: 600px) {
+      .systems-grid { grid-template-columns: 1fr 1fr; }
+      .card-media   { height: 110px; }
+    }
+  </style>
+</head>
 <body>
 
-	<h1>MediScan</h1>
-	<p>AI-Powered Multimedia Medical Visualization System</p>
+<video class="bg-video" autoplay loop muted playsinline src="client/assets/default.mp4"></video>
 
-	<div class="container">
-		<h2>Describe the Anatomical Topic</h2>
-		<label for="symptoms" style="position:absolute;left:-10000px;">Describe your symptoms</label>
-		<textarea id="symptoms"
-			placeholder="Enter anatomical topic (e.g. cardiovascular system, brain activity)..."
-			aria-describedby="listeningStatus"></textarea>
-		<br>
-		<button onclick="startSpeech()">🎤 Start Voice Input</button>
-		<button onclick="analyze()">🧠 Analyze</button>
-		<div id="listeningStatus" role="status" aria-live="polite"></div>
-	</div>
-	<h3>Research Mode: Select Body System</h3>
+<h1>Medi<span>Scan</span></h1>
+<p>AI-Powered Multimedia Medical Visualization System</p>
 
-	<div class="research-panel">
+<!-- ── Input ── -->
+<div class="container">
+  <h2>Describe the Anatomical Topic</h2>
+  <label for="symptoms">Describe your topic</label>
+  <textarea id="symptoms"
+    placeholder="Enter anatomical topic (e.g. cardiovascular system, brain activity)..."
+    aria-describedby="analyzeStatus"></textarea>
 
-		<button onclick="selectTopic('cardiovascular system')">🫀 Cardiovascular System</button>
+  <div class="btn-row">
+    <button id="btn-voice"   onclick="startSpeech()">🎤 Voice Input</button>
+    <button id="btn-analyze" onclick="analyze()">🧠 Analyze</button>
+  </div>
 
-		<button onclick="selectTopic('brain nervous system')">🧠 Nervous System</button>
+  <div id="progress-wrap"><div id="progress-bar"></div></div>
+  <div id="listeningStatus" role="status" aria-live="polite"></div>
+  <div id="analyzeStatus"   role="status" aria-live="polite"></div>
+</div>
 
-		<button onclick="selectTopic('respiratory system')">🫁 Respiratory System</button>
+<!-- ── Explanation output ── -->
+<div id="explanation-box">
+  <h3 id="explanation-heading">Analysis</h3>
+  <div id="explanation-text"></div>
+  <img  id="explanation-media" alt="Visual" />
+  <div class="api-source" id="api-source"></div>
+  <div class="btn-row btn-results">
+    <button onclick="goResults()">▶ View Full Results</button>
+    <button onclick="go3D()">⬡ Open in 3D Explorer</button>
+  </div>
+</div>
 
-		<button onclick="selectTopic('digestive system')">🍽 Digestive System</button>
+<!-- ── System cards ── -->
+<h3 class="section-label">Research Mode — Select Body System</h3>
+<div class="systems-grid" id="systems-grid"></div>
 
-		<button onclick="selectTopic('skeletal system')">🦴 Skeletal System</button>
+<footer>
+  Electronic Media &amp; Multimedia Systems Project — 2026<br>
+  By ~Group 18.
+</footer>
 
-		<button onclick="selectTopic('muscular system')">💪 Muscular System</button>
+<script>
+/* ═══════════════════════════════════════════════════════
+   API KEYS
+   Static HTML files cannot read shell environment vars.
+   Paste your keys below — or leave blank to use mock mode.
+═══════════════════════════════════════════════════════ */
+const GEMINI_API_KEY   = "";   // ← paste key e.g. "AIza..."
+const VECTEEZY_API_KEY = "";   // ← paste key e.g. "abc123..."
 
-		<button onclick="selectTopic('vision eye system')">👁 Vision System</button>
+/* ═══════════════════════════════════════════════════════
+   SYSTEM DEFINITIONS
+═══════════════════════════════════════════════════════ */
+const SYSTEMS = [
+  { key:"circulatory", label:"🫀 Cardiovascular System",
+    video:"client/assets/heart.mp4",   img:"client/assets/heart.jpg",
+    search:"human heart circulatory anatomy",
+    desc:"Heart-driven network delivering oxygen through 100,000 km of vessels.",
+    topic:"cardiovascular system" },
+  { key:"nervous",     label:"🧠 Nervous System",
+    video:"client/assets/brain.mp4",   img:"client/assets/brain.jpg",
+    search:"human brain nervous system anatomy",
+    desc:"86 billion neurons coordinating thought, sense, and movement.",
+    topic:"brain nervous system" },
+  { key:"respiratory", label:"🫁 Respiratory System",
+    video:"client/assets/lungs.mp4",   img:"client/assets/lungs.jpg",
+    search:"human lungs respiratory anatomy",
+    desc:"Oxygen intake and CO₂ removal across 480 million alveoli per lung.",
+    topic:"respiratory system" },
+  { key:"digestive",   label:"🍽 Digestive System",
+    video:"client/assets/stomach.mp4", img:"client/assets/stomach.jpg",
+    search:"human digestive stomach intestine anatomy",
+    desc:"A 9-metre tract breaking down food with mechanical and chemical action.",
+    topic:"digestive system" },
+  { key:"skeletal",    label:"🦴 Skeletal System",
+    video:"client/assets/skeleton.mp4",img:"client/assets/skeleton.jpg",
+    search:"human skeleton bones anatomy",
+    desc:"206 bones protecting organs and providing structural support.",
+    topic:"skeletal system" },
+  { key:"muscular",    label:"💪 Muscular System",
+    video:"client/assets/muscles.mp4", img:"client/assets/muscles.jpg",
+    search:"human muscular system anatomy",
+    desc:"640 muscles enabling every movement through contraction.",
+    topic:"muscular system" },
+  { key:"eye",         label:"👁 Vision System",
+    video:"client/assets/eye.mp4",     img:"client/assets/eye.jpg",
+    search:"human eye vision anatomy",
+    desc:"The eye converts light into neural signals interpreted by the brain.",
+    topic:"vision eye system" },
+  { key:"ear",         label:"👂 Hearing System",
+    video:"client/assets/ear.mp4",     img:"client/assets/ear.jpg",
+    search:"human ear hearing anatomy",
+    desc:"Sound waves converted to signals while maintaining body balance.",
+    topic:"hearing ear system" }
+];
 
-		<button onclick="selectTopic('hearing ear system')">👂 Hearing System</button>
+/* ═══════════════════════════════════════════════════════
+   MOCK EXPLANATIONS (used when Gemini key is absent/fails)
+═══════════════════════════════════════════════════════ */
+const MOCK_EXPLANATIONS = {
+  heart:     "The cardiovascular system is the body's primary transport network, driven by the heart — a muscular organ that beats about 100,000 times per day. It pumps oxygenated blood through arteries to every tissue and returns deoxygenated blood via veins to the lungs for re-oxygenation. An adult's vascular system stretches nearly 100,000 km, enough to circle the Earth twice. Heart disease remains the leading cause of death globally, making cardiovascular health a central focus of modern medicine.",
+  brain:     "The nervous system is the body's command and communication centre, consisting of the brain, spinal cord, and an extensive network of peripheral nerves. It contains roughly 86 billion neurons capable of firing signals at speeds up to 120 m/s. The brain alone consumes about 20% of the body's total energy despite comprising only 2% of its mass. Damage to specific brain regions produces predictable deficits, a fact that underpins much of modern neurology and neurosurgery.",
+  lungs:     "The respiratory system enables gas exchange — oxygen enters the bloodstream and carbon dioxide is expelled — through approximately 480 million alveoli in each lung, offering a combined surface area of around 70 m². At rest, the diaphragm drives 12–20 breathing cycles per minute. The lungs are asymmetrical: the right has three lobes and the left two, making room for the heart. Conditions like asthma, pneumonia, and COPD are among the most prevalent respiratory diseases worldwide.",
+  digestive: "The digestive system processes food through a 9-metre muscular tract, extracting nutrients and eliminating waste over 24–72 hours. The stomach's hydrochloric acid (pH 1.5–3.5) sterilises food and activates enzymes, while the small intestine absorbs most nutrients across its villus-lined walls. The gut microbiome — approximately 38 trillion bacteria — plays a critical role in immunity and metabolism. Disruptions to the microbiome have been linked to conditions ranging from irritable bowel syndrome to depression.",
+  skeletal:  "The skeletal system's 206 adult bones provide structural support, protect vital organs, and serve as levers for muscle action. Bone is a living tissue — the skeleton completely renews itself approximately every 10 years through the activity of osteoblasts and osteoclasts. Red bone marrow is the site of haematopoiesis, producing billions of blood cells daily. Osteoporosis, which reduces bone density, affects over 200 million people worldwide and dramatically increases fracture risk.",
+  muscles:   "The muscular system comprises three types: skeletal (voluntary movement), cardiac (heart pumping), and smooth (organ walls). Of the ~640 named skeletal muscles, the gluteus maximus is the largest while the stapedius in the ear is the smallest. Muscles generate heat as a by-product of contraction, contributing significantly to thermoregulation. Sarcopenia — age-related muscle loss — affects most adults after age 50 and is a major contributor to frailty and metabolic decline.",
+  eye:       "The human eye is a complex optical instrument that focuses light onto the retina, where approximately 120 million rod cells detect light intensity and 6 million cone cells detect colour. The optic nerve transmits this information to the visual cortex at the back of the brain for interpretation. The eye can distinguish about 10 million different colours under ideal conditions. Common conditions include myopia, glaucoma, and age-related macular degeneration.",
+  ear:       "The ear converts pressure waves into neural signals through a remarkable series of mechanical and electrochemical steps. Sound vibrates the eardrum, amplified by three ossicles — the malleus, incus, and stapes — before stimulating the fluid-filled cochlea. The cochlea's hair cells translate vibration into nerve impulses that travel to the auditory cortex. The inner ear also contains the vestibular system, responsible for balance and spatial orientation.",
+  blood:     "Blood is a specialised connective tissue comprising plasma, red blood cells, white blood cells, and platelets suspended in a liquid matrix. The average adult has about 5 litres of blood, which is continuously filtered by the kidneys and liver. Red blood cells carry oxygen via haemoglobin and survive about 120 days before being recycled by the spleen. Blood type compatibility is critical for transfusions; the ABO and Rh systems are the most clinically significant.",
+  general:   "The human body is a remarkably integrated biological system in which organ systems work in concert to maintain homeostasis. Anatomy refers to the structural organisation of the body, while physiology concerns the functions of those structures. Medical imaging technologies — X-ray, CT, MRI, and ultrasound — have transformed our ability to visualise these systems non-invasively. A thorough understanding of anatomy is the foundation of all clinical medicine."
+};
 
-	</div>
-	<div>
-		<video class="bg-video" autoplay loop muted src="client/assets/default.mp4"></video>
-	</div>
+/* map input keywords to a mock key */
+function getMockKey(input) {
+  const t = input.toLowerCase();
+  if (/heart|cardio|circulat/.test(t))  return "heart";
+  if (/brain|nerv|neural/.test(t))       return "brain";
+  if (/lung|respir|breath/.test(t))      return "lungs";
+  if (/digest|stomach|intestin/.test(t)) return "digestive";
+  if (/skelet|bone|spine/.test(t))       return "skeletal";
+  if (/muscl|muscular/.test(t))          return "muscles";
+  if (/eye|vision|retina/.test(t))       return "eye";
+  if (/ear|hear|cochlea/.test(t))        return "ear";
+  if (/blood|plasma|rbc/.test(t))        return "blood";
+  return "general";
+}
 
-	<footer>
-		Electronic Media & Multimedia Systems Project — 2026<br>
-		By ~Group 18.
-	</footer>
+/* bodyPart key for results.html + 3D routing */
+function getBodyPart(input) {
+  const t = input.toLowerCase();
+  if (/heart|cardio|circulat/.test(t))  return "heart";
+  if (/brain|nerv|neural/.test(t))       return "brain";
+  if (/lung|respir|breath/.test(t))      return "lungs";
+  if (/digest|stomach|intestin/.test(t)) return "digestive";
+  if (/skelet|bone/.test(t))             return "skeletal";
+  if (/muscl/.test(t))                   return "muscles";
+  if (/eye|vision/.test(t))              return "eye";
+  if (/ear|hear/.test(t))                return "ear";
+  if (/blood/.test(t))                   return "blood";
+  return "general";
+}
+
+const VIDEO_MAP = {
+  heart:"client/assets/heart.mp4", brain:"client/assets/brain.mp4",
+  lungs:"client/assets/lungs.mp4", digestive:"client/assets/stomach.mp4",
+  skeletal:"client/assets/skeleton.mp4", muscles:"client/assets/muscles.mp4",
+  eye:"client/assets/eye.mp4", ear:"client/assets/ear.mp4",
+  blood:"client/assets/blood.mp4", general:"client/assets/default.mp4"
+};
+
+/* ═══════════════════════════════════════════════════════
+   GEMINI API  (falls back to mock silently)
+═══════════════════════════════════════════════════════ */
+async function geminiExplain(topic) {
+  if (!GEMINI_API_KEY) throw new Error("no key");
+  const prompt =
+    `You are a medical visualization assistant in an anatomy app called MediScan. ` +
+    `Write a clear, accurate 4-sentence explanation about: "${topic}". ` +
+    `Cover: what it is, its primary function, one fascinating anatomical fact, and its clinical relevance. ` +
+    `Plain text only, no markdown, no bullet points.`;
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.65,maxOutputTokens:400} }) }
+  );
+  if (!res.ok) throw new Error(`Gemini ${res.status}`);
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+}
+
+/* ═══════════════════════════════════════════════════════
+   VECTEEZY API  (falls back to local files silently)
+═══════════════════════════════════════════════════════ */
+async function vecteezyMedia(query) {
+  if (!VECTEEZY_API_KEY) throw new Error("no key");
+  const url = "https://api.vecteezy.com/v1/resources?" +
+    new URLSearchParams({ content_type:"image", keyword:query, per_page:"5", sort:"relevant", license_type:"free" });
+  const res = await fetch(url, { headers:{ Authorization:`Bearer ${VECTEEZY_API_KEY}`, Accept:"application/json" } });
+  if (!res.ok) throw new Error(`Vecteezy ${res.status}`);
+  const data = await res.json();
+  const items = data.data || data.resources || [];
+  if (!items.length) throw new Error("no results");
+  const item = items[0];
+  return { url: item.thumbnail_url || item.preview_url || item.url, credit: item.author_name || "Vecteezy" };
+}
+
+/* ═══════════════════════════════════════════════════════
+   VOICE INPUT
+═══════════════════════════════════════════════════════ */
+const inputEl  = document.getElementById("symptoms");
+const listenEl = document.getElementById("listeningStatus");
+
+inputEl.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); analyze(); }
+});
+
+window.startSpeech = function () {
+  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+    alert("Speech recognition not supported in this browser. Try Chrome."); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r  = new SR(); r.lang = "en-US"; r.start();
+  listenEl.textContent = "● Listening…";
+  r.onresult = e => { inputEl.value = e.results[0][0].transcript.toLowerCase(); listenEl.textContent = ""; };
+  r.onerror  = r.onend = () => { listenEl.textContent = ""; };
+};
+
+/* ═══════════════════════════════════════════════════════
+   ANALYZE
+═══════════════════════════════════════════════════════ */
+function setProgress(pct, msg) {
+  const wrap = document.getElementById("progress-wrap");
+  const bar  = document.getElementById("progress-bar");
+  const stat = document.getElementById("analyzeStatus");
+  if (pct === null) { wrap.style.display = "none"; bar.style.width = "0%"; stat.textContent = ""; return; }
+  wrap.style.display = "block"; bar.style.width = pct + "%"; stat.textContent = msg;
+}
+
+window.analyze = async function () {
+  const raw = inputEl.value.trim();
+  if (!raw) { alert("Please enter an anatomical topic."); return; }
+
+  const btn = document.getElementById("btn-analyze");
+  btn.disabled = true;
+  document.getElementById("explanation-box").style.display = "none";
+
+  setProgress(10, "Starting analysis…");
+
+  const bodyPart = getBodyPart(raw);
+  const mockKey  = getMockKey(raw);
+
+  /* Run Gemini + Vecteezy in parallel, fall back gracefully */
+  setProgress(30, GEMINI_API_KEY ? "Asking Gemini AI…" : "Using built-in explanation…");
+
+  const [geminiResult, vecteezyResult] = await Promise.allSettled([
+    geminiExplain(raw),
+    vecteezyMedia(`${raw} anatomy medical`)
+  ]);
+
+  setProgress(80, "Preparing output…");
+
+  /* Explanation text */
+  let explanation = "";
+  let apiSource   = "";
+  if (geminiResult.status === "fulfilled" && geminiResult.value) {
+    explanation = geminiResult.value;
+    apiSource   = "Explanation by Gemini 1.5 Flash";
+  } else {
+    explanation = MOCK_EXPLANATIONS[mockKey] || MOCK_EXPLANATIONS.general;
+    apiSource   = GEMINI_API_KEY
+      ? "Gemini unavailable — showing built-in explanation"
+      : "Built-in explanation (no Gemini key set)";
+  }
+
+  /* Media */
+  let mediaUrl = "";
+  let mediaCredit = "";
+  if (vecteezyResult.status === "fulfilled") {
+    mediaUrl   = vecteezyResult.value.url;
+    mediaCredit = "Image: " + vecteezyResult.value.credit + " via Vecteezy";
+  } else {
+    /* no image shown — video will be on results page */
+    apiSource += VECTEEZY_API_KEY ? " · Vecteezy unavailable" : "";
+  }
+
+  /* Save for results.html */
+  localStorage.setItem("mediscan_explanation", explanation);
+  localStorage.setItem("mediscan_video",       VIDEO_MAP[bodyPart] || VIDEO_MAP.general);
+  localStorage.setItem("mediscan_image",       mediaUrl);
+  localStorage.setItem("mediscan_bodypart",    bodyPart);
+  localStorage.setItem("mediscan_topic",       raw);
+
+  setProgress(100, "Done.");
+  setTimeout(() => setProgress(null), 600);
+
+  /* Show output box */
+  const box = document.getElementById("explanation-box");
+  box.style.display = "block";
+  document.getElementById("explanation-heading").textContent =
+    raw.split(" ").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+  document.getElementById("explanation-text").textContent = explanation;
+  document.getElementById("api-source").textContent = apiSource + (mediaCredit ? " · " + mediaCredit : "");
+
+  const mediaEl = document.getElementById("explanation-media");
+  if (mediaUrl) { mediaEl.src = mediaUrl; mediaEl.style.display = "block"; }
+  else           { mediaEl.style.display = "none"; }
+
+  /* store 3D system key */
+  const sysMatch = SYSTEMS.find(s => s.key === bodyPart || bodyPart === s.key);
+  localStorage.setItem("mediscan_3dkey", sysMatch?.key || bodyPart);
+
+  btn.disabled = false;
+  box.scrollIntoView({ behavior:"smooth", block:"nearest" });
+};
+
+window.goResults = () => window.location.href = "results.html";
+window.go3D      = () => {
+  const k = localStorage.getItem("mediscan_3dkey") || "circulatory";
+  window.location.href = `anatomy-3d.html?system=${k}`;
+};
+
+/* ═══════════════════════════════════════════════════════
+   selectTopic  (quick-pick buttons on cards)
+═══════════════════════════════════════════════════════ */
+window.selectTopic = function (topic) {
+  inputEl.value = topic;
+  window.analyze();
+};
+
+/* ═══════════════════════════════════════════════════════
+   BUILD SYSTEM CARDS  (CSS grid, Vecteezy media)
+═══════════════════════════════════════════════════════ */
+const gridEl = document.getElementById("systems-grid");
+
+SYSTEMS.forEach(sys => {
+  const card = document.createElement("div");
+  card.className = "sys-card";
+  card.innerHTML = `
+    <div class="card-media">
+      <div class="card-skeleton" id="skel-${sys.key}"></div>
+      <video id="vid-${sys.key}" src="${sys.video}" autoplay loop muted playsinline></video>
+      <img  id="img-${sys.key}" alt="${sys.label}" style="display:none">
+      <div  id="src-${sys.key}" class="card-src"></div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">${sys.label}</div>
+      <div class="card-desc">${sys.desc}</div>
+      <div class="card-cta">Click to analyze →</div>
+    </div>`;
+  card.addEventListener("click", () => selectTopic(sys.topic));
+  gridEl.appendChild(card);
+});
+
+/* Load Vecteezy images into cards (background, non-blocking) */
+async function loadCardMedia() {
+  if (!VECTEEZY_API_KEY) {
+    SYSTEMS.forEach(s => { const sk = document.getElementById(`skel-${s.key}`); if(sk) sk.classList.add("done"); });
+    return;
+  }
+  for (const sys of SYSTEMS) {
+    try {
+      const media = await vecteezyMedia(sys.search);
+      const img   = document.getElementById(`img-${sys.key}`);
+      const vid   = document.getElementById(`vid-${sys.key}`);
+      const src   = document.getElementById(`src-${sys.key}`);
+      if (img && media.url) {
+        img.src = media.url; img.style.display = "block";
+        if (vid) vid.style.display = "none";
+        if (src) src.textContent = "© " + media.credit;
+      }
+    } catch (_) { /* keep local video */ }
+    const sk = document.getElementById(`skel-${sys.key}`);
+    if (sk) sk.classList.add("done");
+  }
+}
+
+loadCardMedia();
+</script>
 
 </body>
-
 </html>
