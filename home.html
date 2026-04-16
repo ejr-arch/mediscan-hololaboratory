@@ -6,6 +6,8 @@
 	<title>MediScan | Multimedia Medical Visualizer</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
+	<script src="https://kit.fontawesome.com/b5e537861b.js" crossorigin="anonymous"></script>
+
 	<style>
 		/* ─── KEYS (paste yours here if running as a static file) ─── */
 		/* See the script block below */
@@ -329,8 +331,8 @@
 			aria-describedby="analyzeStatus"></textarea>
 
 		<div class="btn-row">
-			<button id="btn-voice" onclick="startSpeech()">🎤 Voice Input</button>
-			<button id="btn-analyze" onclick="analyze()">🧠 Analyze</button>
+			<button id="btn-voice" onclick="startSpeech()"><i class="fa-solid fa-microphone"></i></button>
+			<button id="btn-analyze" onclick="analyze()"><i class="fa-brands fa-searchengin"></i></button>
 		</div>
 
 		<div id="progress-wrap">
@@ -362,107 +364,107 @@
 	</footer>
 
 	<script>
-/* ═══════════════════════════════════════════════════════
-    API KEYS
-    Loaded from server at runtime
- ═══════════════════════════════════════════════════════ */
-let GEMINI_API_KEY = "";
-let VECTEEZY_API_KEY = "";
-let keysLoaded = false;
+		/* ═══════════════════════════════════════════════════════
+		    API KEYS
+		    Loaded from server at runtime
+		 ═══════════════════════════════════════════════════════ */
+		let GEMINI_API_KEY = "";
+		let VECTEEZY_API_KEY = "";
+		let keysLoaded = false;
 
-fetch("config")
-  .then(r => r.json())
-  .then(cfg => {
-    GEMINI_API_KEY = cfg.GEMINI_API_KEY || "";
-    VECTEEZY_API_KEY = cfg.VECTEEZY_API_KEY || "";
-    keysLoaded = true;
-    console.log("API keys loaded:", GEMINI_API_KEY ? "yes" : "no");
-  })
-  .catch(() => { /* use empty keys - mock mode */ keysLoaded = true; });
+		fetch("config")
+			.then(r => r.json())
+			.then(cfg => {
+				GEMINI_API_KEY = cfg.GEMINI_API_KEY || "";
+				VECTEEZY_API_KEY = cfg.VECTEEZY_API_KEY || "";
+				keysLoaded = true;
+				console.log("API keys loaded:", GEMINI_API_KEY ? "yes" : "no");
+			})
+			.catch(() => { /* use empty keys - mock mode */ keysLoaded = true;});
 
 		/* ═══════════════════════════════════════════════════════
 		   SYSTEM DEFINITIONS
 		═══════════════════════════════════════════════════════ */
 		const SYSTEMS = [
 			{
-				key: "circulatory", label: "🫀 Cardiovascular System",
+				key: "circulatory", label: "Cardiovascular System",
 				video: "client/assets/heart.mp4", img: "client/assets/heart.jpg",
 				search: "human heart circulatory anatomy",
 				desc: "Heart-driven network delivering oxygen through 100,000 km of vessels.",
 				topic: "cardiovascular system"
 			},
 			{
-				key: "nervous", label: "🧠 Nervous System",
+				key: "nervous", label: "Nervous System",
 				video: "client/assets/brain.mp4", img: "client/assets/brain.jpg",
 				search: "human brain nervous system anatomy",
 				desc: "86 billion neurons coordinating thought, sense, and movement.",
 				topic: "brain nervous system"
 			},
 			{
-				key: "respiratory", label: "🫁 Respiratory System",
+				key: "respiratory", label: "Respiratory System",
 				video: "client/assets/lungs.mp4", img: "client/assets/lungs.jpg",
 				search: "human lungs respiratory anatomy",
 				desc: "Oxygen intake and CO₂ removal across 480 million alveoli per lung.",
 				topic: "respiratory system"
 			},
 			{
-				key: "digestive", label: "🍽 Digestive System",
+				key: "digestive", label: "Digestive System",
 				video: "client/assets/digestive.mp4", img: "client/assets/digestive.jpg",
 				search: "human digestive stomach intestine anatomy",
 				desc: "A 9-metre tract breaking down food with mechanical and chemical action.",
 				topic: "digestive system"
 			},
 			{
-				key: "skeletal", label: "🦴 Skeletal System",
+				key: "skeletal", label: "Skeletal System",
 				video: "client/assets/skeletal.mp4", img: "client/assets/skeletal.jpg",
 				search: "human skeleton bones anatomy",
 				desc: "206 bones protecting organs and providing structural support.",
 				topic: "skeletal system"
 			},
 			{
-				key: "muscular", label: "💪 Muscular System",
+				key: "muscular", label: "Muscular System",
 				video: "client/assets/muscle.mp4", img: "client/assets/muscle.jpg",
 				search: "human muscular system anatomy",
 				desc: "640 muscles enabling every movement through contraction.",
 				topic: "muscular system"
 			},
 			{
-				key: "eye", label: "👁 Vision System",
+				key: "eye", label: "Vision System",
 				video: "client/assets/eye.mp4", img: "client/assets/eye.jpg",
 				search: "human eye vision anatomy",
 				desc: "The eye converts light into neural signals interpreted by the brain.",
 				topic: "vision eye system"
 			},
 			{
-				key: "ear", label: "👂 Hearing System",
+				key: "ear", label: "Hearing System",
 				video: "client/assets/ear.mp4", img: "client/assets/ear.jpg",
 				search: "human ear hearing anatomy",
 				desc: "Sound waves converted to signals while maintaining body balance.",
 				topic: "hearing ear system"
 			},
 			{
-				key: "endocrine", label: "⚗️ Endocrine System",
+				key: "endocrine", label: "Endocrine System",
 				video: "client/assets/endocrine.mp4", img: "client/assets/endocrine.jpg",
 				search: "human endocrine glands anatomy",
 				desc: "Hormone-secreting glands regulating metabolism, growth, and reproduction.",
 				topic: "endocrine system"
 			},
 			{
-				key: "urinary", label: "💧 Urinary System",
+				key: "urinary", label: "Urinary System",
 				video: "client/assets/urinary.mp4", img: "client/assets/urinary.jpg",
 				search: "human kidney urinary anatomy",
 				desc: "Kidneys filter blood and produce urine to maintain fluid balance.",
 				topic: "urinary system"
 			},
 			{
-				key: "lymphatic", label: "🛡️ Lymphatic System",
+				key: "lymphatic", label: "Lymphatic System",
 				video: "client/assets/default.mp4", img: "client/assets/default.jpg",
 				search: "human lymphatic system anatomy",
 				desc: "Immune network of vessels, nodes, and organs defending against pathogens.",
 				topic: "lymphatic system"
 			},
 			{
-				key: "skin", label: "🧬 Integumentary System",
+				key: "skin", label: "Integumentary System",
 				video: "client/assets/default.mp4", img: "client/assets/default.jpg",
 				search: "human skin anatomy",
 				desc: "The largest organ forming protective barrier against pathogens and UV radiation.",
@@ -612,10 +614,10 @@ fetch("config")
 			if (!keysLoaded) {
 				await new Promise(resolve => {
 					const check = setInterval(() => {
-						if (keysLoaded) { clearInterval(check); resolve(); }
+						if (keysLoaded) {clearInterval(check); resolve();}
 					}, 100);
 					// Timeout after 2s
-					setTimeout(() => { clearInterval(check); resolve(); }, 2000);
+					setTimeout(() => {clearInterval(check); resolve();}, 2000);
 				});
 			}
 
