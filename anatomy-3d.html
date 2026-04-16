@@ -3,36 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MediScan | 3D Body Explorer</title>
-<link rel="icon" type="image/x-icon" href="client/assets/logo.png">
+<title>MediScan 3D — Interactive Body Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f141a;
-  --panel: rgba(13,20,28,0.92);
-  --border: rgba(42,58,80,0.8);
-  --text: #e8edf2;
-  --muted: #7a9ab8;
-  --accent: #00e0ff;
+  --bg: #050810;
+  --panel: rgba(6,11,22,0.90);
+  --border: rgba(0,180,255,0.10);
+  --text: #b0cce8;
+  --muted: #334a68;
+  --accent: #00d4ff;
   --c-skel: #c8e8ff;
   --c-musc: #ff6b35;
   --c-circ: #ff3a5c;
   --c-resp: #00bfff;
   --c-dige: #f5a623;
   --c-nerv: #bb55ff;
-  --c-endo: #00ff88;
-  --c-urin: #a855f7;
-  --c-lymp: #38bdf8;
-  --c-skin: #fbbf24;
-  --c-eye: #22d3ee;
-  --c-ear: #f472b6;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); overflow:hidden; color:var(--text); font-family:"Segoe UI",Arial,sans-serif; font-size:1rem; }
-
-.bg-video {
-  position:fixed; inset:0; width:100%; height:100%;
-  object-fit:cover; z-index:0; opacity:0.10;
-}
+body { background:var(--bg); overflow:hidden; color:var(--text); font-family:'Syne',sans-serif; }
 
 #c {
   position:fixed; inset:0; z-index:1;
@@ -56,14 +45,21 @@ header {
   pointer-events:auto;
   backdrop-filter:blur(16px);
 }
-.logo { font-size:1.15rem; font-weight:700; color:var(--accent); letter-spacing:0.04em; }
-.logo span { color:#fff; }
-.tagline { font-size:.8rem; color:var(--muted); }
+.logo { font-size:.95rem; font-weight:800; letter-spacing:.3em; color:var(--accent); }
+.tagline { font-family:'Space Mono',monospace; font-size:.55rem; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }
 .badge {
-  font-size:.7rem; font-weight:600;
-  color:var(--accent); border:1px solid rgba(0,224,255,.4);
-  padding:5px 12px; border-radius:6px;
+  font-family:'Space Mono',monospace; font-size:.55rem;
+  color:var(--accent); border:1px solid rgba(0,212,255,.3);
+  padding:3px 9px; border-radius:3px; letter-spacing:.1em;
 }
+.back-btn {
+  font-family:'Space Mono',monospace; font-size:.6rem;
+  background:transparent; border:1px solid var(--muted);
+  color:var(--muted); padding:5px 12px; border-radius:4px;
+  cursor:pointer; letter-spacing:.08em; transition:all .18s;
+  pointer-events:auto;
+}
+.back-btn:hover { color:var(--accent); border-color:var(--accent); }
 
 .sidebar-left {
   grid-row:2; grid-column:1;
@@ -80,73 +76,60 @@ header {
 }
 
 .sec-label {
-  font-size:.7rem; font-weight:600;
-  letter-spacing:.1em; color:var(--muted);
+  font-family:'Space Mono',monospace; font-size:.52rem;
+  letter-spacing:.22em; color:var(--muted);
   text-transform:uppercase; padding:0 4px;
-  margin-bottom:4px; margin-top:14px;
+  margin-bottom:2px; margin-top:10px;
 }
 .sys-btn {
   display:flex; align-items:center; gap:9px;
-  padding:10px 14px; border-radius:6px;
-  border:1px solid var(--border); background:#131c28;
+  padding:9px 12px; border-radius:6px;
+  border:1px solid transparent; background:transparent;
   cursor:pointer; text-align:left; width:100%;
-  color:var(--muted); font-size:.85rem;
+  color:var(--muted); font-family:'Syne',sans-serif;
+  font-size:.8rem; font-weight:600; letter-spacing:.04em;
   transition:all .18s;
 }
-.sys-btn:hover { color:var(--text); border-color:var(--accent); background:#1a2535; }
+.sys-btn:hover { color:var(--text); border-color:rgba(255,255,255,.07); }
 .sys-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .sys-btn[data-s="skeletal"] .sys-dot    { background:var(--c-skel); box-shadow:0 0 6px var(--c-skel); }
 .sys-btn[data-s="muscular"] .sys-dot    { background:var(--c-musc); box-shadow:0 0 6px var(--c-musc); }
 .sys-btn[data-s="circulatory"] .sys-dot { background:var(--c-circ); box-shadow:0 0 6px var(--c-circ); }
-.sys-btn[data-s="respiratory"] .sys-dot { background:var(--c-resp); box-shadow:0 0 8px var(--c-resp); }
-.sys-btn[data-s="digestive"] .sys-dot   { background:var(--c-dige); box-shadow:0 0 8px var(--c-dige); }
-.sys-btn[data-s="nervous"] .sys-dot     { background:var(--c-nerv); box-shadow:0 0 8px var(--c-nerv); }
-.sys-btn[data-s="endocrine"] .sys-dot   { background:var(--c-endo); box-shadow:0 0 8px var(--c-endo); }
-.sys-btn[data-s="urinary"] .sys-dot     { background:var(--c-urin); box-shadow:0 0 8px var(--c-urin); }
-.sys-btn[data-s="lymphatic"] .sys-dot   { background:var(--c-lymp); box-shadow:0 0 8px var(--c-lymp); }
-.sys-btn[data-s="skin"] .sys-dot        { background:var(--c-skin); box-shadow:0 0 8px var(--c-skin); }
-.sys-btn[data-s="eye"] .sys-dot         { background:var(--c-eye); box-shadow:0 0 8px var(--c-eye); }
-.sys-btn[data-s="ear"] .sys-dot         { background:var(--c-ear); box-shadow:0 0 8px var(--c-ear); }
-.sys-btn[data-s="skeletal"].active    { color:var(--c-skel); border-color:var(--c-skel); background:rgba(200,232,255,0.08); }
-.sys-btn[data-s="muscular"].active    { color:var(--c-musc); border-color:var(--c-musc); background:rgba(255,107,53,0.08); }
-.sys-btn[data-s="circulatory"].active { color:var(--c-circ); border-color:var(--c-circ); background:rgba(255,58,92,0.08); }
-.sys-btn[data-s="respiratory"].active { color:var(--c-resp); border-color:var(--c-resp); background:rgba(0,191,255,0.08); }
-.sys-btn[data-s="digestive"].active   { color:var(--c-dige); border-color:var(--c-dige); background:rgba(245,166,35,0.08); }
-.sys-btn[data-s="nervous"].active     { color:var(--c-nerv); border-color:var(--c-nerv); background:rgba(187,85,255,0.08); }
-.sys-btn[data-s="endocrine"].active   { color:var(--c-endo); border-color:var(--c-endo); background:rgba(0,255,136,0.08); }
-.sys-btn[data-s="urinary"].active     { color:var(--c-urin); border-color:var(--c-urin); background:rgba(168,85,247,0.08); }
-.sys-btn[data-s="lymphatic"].active   { color:var(--c-lymp); border-color:var(--c-lymp); background:rgba(56,189,248,0.08); }
-.sys-btn[data-s="skin"].active        { color:var(--c-skin); border-color:var(--c-skin); background:rgba(251,191,36,0.08); }
-.sys-btn[data-s="eye"].active         { color:var(--c-eye); border-color:var(--c-eye); background:rgba(34,211,238,0.08); }
-.sys-btn[data-s="ear"].active         { color:var(--c-ear); border-color:var(--c-ear); background:rgba(244,114,182,0.08); }
+.sys-btn[data-s="respiratory"] .sys-dot { background:var(--c-resp); box-shadow:0 0 6px var(--c-resp); }
+.sys-btn[data-s="digestive"] .sys-dot   { background:var(--c-dige); box-shadow:0 0 6px var(--c-dige); }
+.sys-btn[data-s="nervous"] .sys-dot     { background:var(--c-nerv); box-shadow:0 0 6px var(--c-nerv); }
+.sys-btn[data-s="skeletal"].active    { color:var(--c-skel); border-color:rgba(200,232,255,.25); }
+.sys-btn[data-s="muscular"].active    { color:var(--c-musc); border-color:rgba(255,107,53,.25); }
+.sys-btn[data-s="circulatory"].active { color:var(--c-circ); border-color:rgba(255,58,92,.25); }
+.sys-btn[data-s="respiratory"].active { color:var(--c-resp); border-color:rgba(0,191,255,.25); }
+.sys-btn[data-s="digestive"].active   { color:var(--c-dige); border-color:rgba(245,166,35,.25); }
+.sys-btn[data-s="nervous"].active     { color:var(--c-nerv); border-color:rgba(187,85,255,.25); }
 
 .info-panel { display:none; }
 .info-panel.active { display:block; animation:fadeIn .28s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-.info-title { font-size:1.2rem; font-weight:700; margin-bottom:4px; }
-.info-sub { font-size:.7rem; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
-.info-desc { font-size:.88rem; line-height:1.7; color:var(--text); opacity:.85; margin-bottom:16px; }
-.chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-.chip { padding:4px 10px; border-radius:4px; font-size:.7rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; border:1px solid currentColor; }
-.stat { padding:10px 12px; border-radius:5px; border-left:3px solid currentColor; background:#131c28; margin-bottom:8px; }
-.stat-label { font-size:.65rem; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
-.stat-val { font-size:.88rem; font-weight:600; color:var(--text); }
+.info-title { font-size:1.2rem; font-weight:800; margin-bottom:3px; }
+.info-sub { font-family:'Space Mono',monospace; font-size:.55rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:13px; }
+.info-desc { font-size:.76rem; line-height:1.78; opacity:.82; margin-bottom:15px; }
+.chips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px; }
+.chip { padding:3px 9px; border-radius:4px; font-size:.62rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; border:1px solid currentColor; opacity:.65; }
+.stat { padding:9px 11px; border-radius:5px; border-left:2px solid currentColor; background:rgba(255,255,255,.025); margin-bottom:7px; }
+.stat-label { font-family:'Space Mono',monospace; font-size:.5rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
+.stat-val { font-size:.8rem; font-weight:700; }
 
 .default-state { padding:36px 16px; text-align:center; color:var(--muted); }
-.default-state .icon { font-size:2.4rem; opacity:.2; margin-bottom:14px; }
-.default-state p { font-size:.85rem; line-height:1.7; }
+.default-state .icon { font-size:2.2rem; opacity:.15; margin-bottom:14px; }
+.default-state p { font-size:.72rem; line-height:1.8; }
 
 .c-skel{color:var(--c-skel)} .c-musc{color:var(--c-musc)}
 .c-circ{color:var(--c-circ)} .c-resp{color:var(--c-resp)}
 .c-dige{color:var(--c-dige)} .c-nerv{color:var(--c-nerv)}
-.c-endo{color:var(--c-endo)} .c-urin{color:var(--c-urin)}
-.c-lymp{color:var(--c-lymp)} .c-skin{color:var(--c-skin)}
-.c-eye{color:var(--c-eye)}  .c-ear{color:var(--c-ear)}
 
 #hint {
   position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
-  font-size:.75rem; color:var(--muted);
+  font-family:'Space Mono',monospace; font-size:.55rem;
+  color:var(--muted); letter-spacing:.16em; text-transform:uppercase;
   pointer-events:none; transition:opacity .6s; z-index:20;
 }
 
@@ -159,37 +142,29 @@ header {
 }
 .loader-ring {
   width:44px; height:44px; border-radius:50%;
-  border:2px solid rgba(0,224,255,.15);
+  border:2px solid rgba(0,212,255,.15);
   border-top-color:var(--accent);
   animation:spin 1s linear infinite;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
-.loader-text { font-size:.75rem; color:var(--muted); }
-
-/* footer */
-#footer {
-  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
-  font-size:.7rem; color:var(--muted); opacity:.5;
-  padding:8px 16px; z-index:20; text-align:center;
-}
+.loader-text { font-family:'Space Mono',monospace; font-size:.6rem; color:var(--muted); letter-spacing:.2em; }
 </style>
 </head>
 <body>
-
-<video class="bg-video" autoplay loop muted playsinline src="client/assets/default.mp4"></video>
 
 <canvas id="c"></canvas>
 
 <div id="loader">
   <div class="loader-ring"></div>
-  <div class="loader-text">INITIALISING 3D EXPLORER</div>
+  <div class="loader-text">INITIALISING WEBGL</div>
 </div>
 
 <div id="ui">
   <header>
-    <a href="home.html" class="logo" style="text-decoration:none;">Medi<span>Scan</span></a>
-    <div class="tagline">3D Body Explorer</div>
-    <a href="home.html" class="badge" style="text-decoration:none;">← Home</a>
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <div class="logo">MEDI<span style="opacity:.25">·</span>SCAN</div>
+    <div class="tagline">Interactive 3D Human Systems Explorer</div>
+    <div class="badge" id="sys-badge">SELECT SYSTEM</div>
   </header>
 
   <aside class="sidebar-left">
@@ -200,12 +175,6 @@ header {
     <button class="sys-btn" data-s="respiratory" onclick="selectSys('respiratory')"><span class="sys-dot"></span>Respiratory</button>
     <button class="sys-btn" data-s="digestive"   onclick="selectSys('digestive')"><span class="sys-dot"></span>Digestive</button>
     <button class="sys-btn" data-s="nervous"     onclick="selectSys('nervous')"><span class="sys-dot"></span>Nervous</button>
-    <button class="sys-btn" data-s="endocrine"   onclick="selectSys('endocrine')"><span class="sys-dot"></span>Endocrine</button>
-    <button class="sys-btn" data-s="urinary"     onclick="selectSys('urinary')"><span class="sys-dot"></span>Urinary</button>
-    <button class="sys-btn" data-s="lymphatic"   onclick="selectSys('lymphatic')"><span class="sys-dot"></span>Lymphatic</button>
-    <button class="sys-btn" data-s="skin"        onclick="selectSys('skin')"><span class="sys-dot"></span>Integumentary</button>
-    <button class="sys-btn" data-s="eye"         onclick="selectSys('eye')"><span class="sys-dot"></span>Visual</button>
-    <button class="sys-btn" data-s="ear"         onclick="selectSys('ear')"><span class="sys-dot"></span>Auditory</button>
 
     <div class="sec-label" style="margin-top:16px">View Controls</div>
     <button class="sys-btn" id="shell-btn" onclick="toggleShell()">
@@ -330,163 +299,39 @@ header {
       <div class="stat c-nerv"><div class="stat-label">Synapses</div><div class="stat-val">~100 trillion</div></div>
       <div class="stat c-nerv"><div class="stat-label">Energy Use</div><div class="stat-val">20% of body total</div></div>
     </div>
-
-    <div class="info-panel" id="panel-endocrine">
-      <div class="info-title c-endo">Endocrine System</div>
-      <div class="info-sub">Hormonal Regulation</div>
-      <p class="info-desc">Hormone-secreting glands regulate metabolism, growth, reproduction, and stress responses through the bloodstream, affecting virtually every cell in the body.</p>
-      <div class="sec-label">Key Glands</div>
-      <div class="chips">
-        <span class="chip c-endo">Pituitary</span><span class="chip c-endo">Thyroid</span>
-        <span class="chip c-endo">Adrenal</span><span class="chip c-endo">Pancreas</span>
-        <span class="chip c-endo">Ovaries</span><span class="chip c-endo">Testes</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-endo"><div class="stat-label">Major Glands</div><div class="stat-val">8 endocrine</div></div>
-      <div class="stat c-endo"><div class="stat-label">Hormones</div><div class="stat-val">~50+ identified</div></div>
-      <div class="stat c-endo"><div class="stat-label">Daily Cortisol</div><div class="stat-val">15-25 mg</div></div>
-      <div class="stat c-endo"><div class="stat-label">Insulin Release</div><div class="stat-val">~50 units/day</div></div>
-    </div>
-
-    <div class="info-panel" id="panel-urinary">
-      <div class="info-title c-urin">Urinary System</div>
-      <div class="info-sub">Filtration &amp; Excretion</div>
-      <p class="info-desc">The kidneys filter ~180 litres of blood daily, producing 1-2 litres of urine that maintain fluid balance, electrolyte levels, and remove metabolic waste.</p>
-      <div class="sec-label">Key Organs</div>
-      <div class="chips">
-        <span class="chip c-urin">Kidneys</span><span class="chip c-urin">Bladder</span>
-        <span class="chip c-urin">Ureters</span><span class="chip c-urin">Urethra</span>
-        <span class="chip c-urin">Nephrons</span><span class="chip c-urin">Renal Pelvis</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-urin"><div class="stat-label">Blood Filtered</div><div class="stat-val">~180 L/day</div></div>
-      <div class="stat c-urin"><div class="stat-label">Urine Produced</div><div class="stat-val">1-2 L/day</div></div>
-      <div class="stat c-urin"><div class="stat-label">Nephrons</div><div class="stat-val">~1M per kidney</div></div>
-      <div class="stat c-urin"><div class="stat-label">Filtration Rate</div><div class="stat-val">125 mL/min</div></div>
-    </div>
-
-    <div class="info-panel" id="panel-lymphatic">
-      <div class="info-title c-lymp">Lymphatic System</div>
-      <div class="info-sub">Immunity &amp; Drainage</div>
-      <p class="info-desc">A network of vessels, nodes, and organs that returns interstitial fluid to circulation, absorbs fats, and mounts immune defences against pathogens.</p>
-      <div class="sec-label">Key Components</div>
-      <div class="chips">
-        <span class="chip c-lymp">Lymph Nodes</span><span class="chip c-lymp">Spleen</span>
-        <span class="chip c-lymp">Thymus</span><span class="chip c-lymp">Tonsils</span>
-        <span class="chip c-lymp">Lymph Vessels</span><span class="chip c-lymp">Peyer's Patches</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-lymp"><div class="stat-label">Lymph Nodes</div><div class="stat-val">~600</div></div>
-      <div class="stat c-lymp"><div class="stat-label">Daily Lymph</div><div class="stat-val">~3 litres</div></div>
-      <div class="stat c-lymp"><div class="stat-label">Lymphocytes</div><div class="stat-val">~2×10¹²</div></div>
-      <div class="stat c-lymp"><div class="stat-label">Spleen Weight</div><div class="stat-val">~150g</div></div>
-    </div>
-
-    <div class="info-panel" id="panel-skin">
-      <div class="info-title c-skin">Integumentary System</div>
-      <div class="info-sub">Protection &amp; Thermoregulation</div>
-      <p class="info-desc">The skin — the largest organ — forms a protective barrier against pathogens, UV radiation, and dehydration while regulating body temperature through sweating.</p>
-      <div class="sec-label">Key Structures</div>
-      <div class="chips">
-        <span class="chip c-skin">Epidermis</span><span class="chip c-skin">Dermis</span>
-        <span class="chip c-skin">Hypodermis</span><span class="chip c-skin">Hair Follicles</span>
-        <span class="chip c-skin">Sweat Glands</span><span class="chip c-skin">Nail Beds</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-skin"><div class="stat-label">Surface Area</div><div class="stat-val">~2 m²</div></div>
-      <div class="stat c-skin"><div class="stat-label">Thickness</div><div class="stat-val">0.05-5 mm</div></div>
-      <div class="stat c-skin"><div class="stat-label">Daily Sweat</div><div class="stat-val">Up to 10 L</div></div>
-      <div class="stat c-skin"><div class="stat-label">Cell Turnover</div><div class="stat-val">~28 days</div></div>
-    </div>
-
-    <div class="info-panel" id="panel-eye">
-      <div class="info-title c-eye">Visual System</div>
-      <div class="info-sub">Image Capture &amp; Processing</div>
-      <p class="info-desc">The eye focuses light onto the retina where 126 million photoreceptors convert it into neural signals, processed by the brain's visual cortex for interpretation.</p>
-      <div class="sec-label">Key Structures</div>
-      <div class="chips">
-        <span class="chip c-eye">Cornea</span><span class="chip c-eye">Lens</span>
-        <span class="chip c-eye">Retina</span><span class="chip c-eye">Optic Nerve</span>
-        <span class="chip c-eye">Iris</span><span class="chip c-eye">Fovea</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-eye"><div class="stat-label">Photoreceptors</div><div class="stat-val">126 million</div></div>
-      <div class="stat c-eye"><div class="stat-label">Resolution</div><div class="stat-val">~576 MP (theoretical)</div></div>
-      <div class="stat c-eye"><div class="stat-label">Refresh Rate</div><div class="stat-val">60+ FPS</div></div>
-      <div class="stat c-eye"><div class="stat-label">Colour Distinction</div><div class="stat-val">~10 million</div></div>
-    </div>
-
-    <div class="info-panel" id="panel-ear">
-      <div class="info-title c-ear">Auditory System</div>
-      <div class="info-sub">Sound &amp; Balance</div>
-      <p class="info-desc">The ear converts sound waves into neural signals while the vestibular system detects head movement and position, enabling hearing and balance coordination.</p>
-      <div class="sec-label">Key Structures</div>
-      <div class="chips">
-        <span class="chip c-ear">Eardrum</span><span class="chip c-ear">Ossicles</span>
-        <span class="chip c-ear">Cochlea</span><span class="chip c-ear">Semi-circular Canals</span>
-        <span class="chip c-ear">Auditory Nerve</span><span class="chip c-ear">Eustachian Tube</span>
-      </div>
-      <div class="sec-label">Stats</div>
-      <div class="stat c-ear"><div class="stat-label">Frequency Range</div><div class="stat-val">20-20,000 Hz</div></div>
-      <div class="stat c-ear"><div class="stat-label">Hair Cells</div><div class="stat-val">~16,000 per cochlea</div></div>
-      <div class="stat c-ear"><div class="stat-label">Sound Detection</div><div class="stat-val">0 dB threshold</div></div>
-      <div class="stat c-ear"><div class="stat-label">Balance Receptors</div><div class="stat-val">~50,000 per ear</div></div>
-    </div>
   </aside>
 </div>
 
-<div id="hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
-
-<div id="footer">Electronic Media &amp; Multimedia Systems Project — 2026 · By ~Group 18</div>
+<div id="hint">DRAG TO ROTATE &nbsp;·&nbsp; SCROLL TO ZOOM</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/MaskPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ClearMaskPass.js"></script>
 <script>
-console.log("3D Explorer loading...");
 if (typeof THREE === 'undefined') {
-  document.getElementById('loader').innerHTML = '<div style="color:#ff3a5c">Three.js failed to load. Check internet connection.</div>';
-  console.error("THREE not defined");
-} else {
-  console.log("Three.js loaded:", THREE.REVISION);
-
-  (function () {
+  document.body.innerHTML = '<div style="color:#00d4ff;padding:40px;font-family:monospace;text-align:center"><h1>Error: Three.js failed to load</h1><p>Check your internet connection or try refreshing.</p></div>';
+}
+</script>
+<script>
+(function () {
+  try {
+  const canvas = document.getElementById('c');
+  const W = () => window.innerWidth;
+  const H = () => window.innerHeight;
 
   /* ── RENDERER ── */
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W(), H());
-  renderer.setClearColor(0x0f141a, 1);
+  renderer.setClearColor(0x050810, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMappingExposure = 1.1;
 
-  /* ── SCENE & CAMERA ── */
+  /* ── SCENE ── */
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0f141a, 0.018);
+  scene.fog = new THREE.FogExp2(0x050810, 0.022);
 
+  /* ── CAMERA ── */
   const camera = new THREE.PerspectiveCamera(48, W() / H(), 0.1, 300);
   camera.position.set(0, 0, 22);
-
-  /* ── POST PROCESSING ── */
-  const composer = new THREE.EffectComposer(renderer);
-  const renderPass = new THREE.RenderPass(scene, camera);
-  composer.addPass(renderPass);
-
-  const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(W(), H()),
-    0.6,   // strength
-    0.4,   // radius
-    0.85   // threshold
-  );
-  composer.addPass(bloomPass);
 
   /* ── LIGHTS ── */
   scene.add(new THREE.AmbientLight(0x08111e, 4));
@@ -514,39 +359,11 @@ if (typeof THREE === 'undefined') {
     starPos.push((Math.random() - 0.5) * 300, (Math.random() - 0.5) * 300, -50 - Math.random() * 150);
   }
   starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x2a3a50, size: 0.1 })));
+  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x223355, size: 0.1 })));
 
-  const grid = new THREE.GridHelper(60, 60, 0x0a1520, 0x0a1520);
+  const grid = new THREE.GridHelper(50, 50, 0x0a1828, 0x0a1828);
   grid.position.y = -8.5;
   scene.add(grid);
-
-  /* Glow ring under body */
-  const ringGeo = new THREE.RingGeometry(1.5, 2.5, 64);
-  const ringMat = new THREE.MeshBasicMaterial({
-    color: 0x00e0ff, transparent: true, opacity: 0.08,
-    side: THREE.DoubleSide
-  });
-  const glowRing = new THREE.Mesh(ringGeo, ringMat);
-  glowRing.rotation.x = -Math.PI / 2;
-  glowRing.position.y = -8.4;
-  scene.add(glowRing);
-
-  /* Floating particles */
-  const particleCount = 200;
-  const particleGeo = new THREE.BufferGeometry();
-  const particlePos = [];
-  for (let i = 0; i < particleCount; i++) {
-    particlePos.push(
-      (Math.random() - 0.5) * 40,
-      (Math.random() - 0.5) * 30,
-      (Math.random() - 0.5) * 30 - 5
-    );
-  }
-  particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(particlePos, 3));
-  const particleMesh = new THREE.Points(particleGeo, new THREE.PointsMaterial({
-    color: 0x00e0ff, size: 0.06, transparent: true, opacity: 0.4
-  }));
-  scene.add(particleMesh);
 
   /* ── BODY GROUP ── */
   const bodyGroup = new THREE.Group();
@@ -555,147 +372,104 @@ if (typeof THREE === 'undefined') {
   const shellMeshes = [];
 
   const shellMat = new THREE.MeshPhongMaterial({
-    color: 0x0a1a2e, emissive: 0x051525,
-    transparent: true, opacity: 0.28,
+    color: 0x0c2040, emissive: 0x020810,
+    transparent: true, opacity: 0.32,
     side: THREE.DoubleSide, depthWrite: false,
-    shininess: 80, specular: 0x1a3a5a,
   });
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x00e0ff, wireframe: true,
-    transparent: true, opacity: 0.08,
-  });
-  const glowLineMat = new THREE.LineBasicMaterial({
-    color: 0x00e0ff, transparent: true, opacity: 0.15
+    color: 0x1a3a60, wireframe: true,
+    transparent: true, opacity: 0.12,
   });
 
-  function addShell(geo, pos, rotZ, scale) {
+  function addShell(geo, pos, rotZ) {
     const solid = new THREE.Mesh(geo, shellMat);
     const wire  = new THREE.Mesh(geo, wireMat);
     const g = new THREE.Group();
     g.add(solid, wire);
     if (pos)  g.position.set(...pos);
     if (rotZ) g.rotation.z = rotZ;
-    if (scale) g.scale.set(...scale);
     bodyGroup.add(g);
     shellMeshes.push(g);
     return g;
   }
 
-  /* Improved body model with more segments for smoother appearance */
-  /* Head - larger, more detailed */
-  addShell(new THREE.SphereGeometry(1.15, 32, 32), [0, 5.1, 0]);
-  /* Cranium curve */
-  addShell(new THREE.SphereGeometry(0.95, 24, 24), [0, 5.35, -0.1]);
-  /* Neck - tapered */
-  addShell(new THREE.CylinderGeometry(0.38, 0.44, 0.8, 20), [0, 4.15, 0]);
-  /* Chest - wider at top, tapered down */
-  addShell(new THREE.CylinderGeometry(1.65, 1.48, 0.9, 24), [0, 3.2, 0]);
+  /* Head */
+  addShell(new THREE.SphereGeometry(1.1, 22, 22), [0, 5.0, 0]);
+  /* Neck */
+  addShell(new THREE.CylinderGeometry(0.42, 0.44, 0.7, 16), [0, 4.1, 0]);
+  /* Chest cap */
+  addShell(new THREE.CylinderGeometry(1.62, 1.50, 0.85, 20), [0, 3.1, 0]);
   /* Torso */
-  addShell(new THREE.CylinderGeometry(1.48, 1.55, 3.5, 24), [0, 1.3, 0]);
-  /* Lower torso / pelvis area */
-  addShell(new THREE.CylinderGeometry(1.55, 1.38, 1.1, 24), [0, -0.8, 0]);
+  addShell(new THREE.CylinderGeometry(1.50, 1.55, 3.4, 20), [0, 1.35, 0]);
+  /* Hips */
+  addShell(new THREE.CylinderGeometry(1.55, 1.42, 1.0, 20), [0, -0.75, 0]);
   /* Shoulder joints */
-  addShell(new THREE.SphereGeometry(0.46, 16, 16), [-2.05, 3.25, 0]);
-  addShell(new THREE.SphereGeometry(0.46, 16, 16), [ 2.05, 3.25, 0]);
-  /* Upper arms - better proportions */
-  addShell(new THREE.CylinderGeometry(0.36, 0.30, 2.2, 18), [-2.2, 1.85, 0],  0.12);
-  addShell(new THREE.CylinderGeometry(0.36, 0.30, 2.2, 18), [ 2.2, 1.85, 0], -0.12);
+  addShell(new THREE.SphereGeometry(0.44, 14, 14), [-2.0, 3.2, 0]);
+  addShell(new THREE.SphereGeometry(0.44, 14, 14), [ 2.0, 3.2, 0]);
+  /* Upper arms */
+  addShell(new THREE.CylinderGeometry(0.34, 0.29, 2.1, 14), [-2.18, 1.85, 0],  0.14);
+  addShell(new THREE.CylinderGeometry(0.34, 0.29, 2.1, 14), [ 2.18, 1.85, 0], -0.14);
   /* Elbow joints */
-  addShell(new THREE.SphereGeometry(0.28, 14, 14), [-2.35, 0.68, 0]);
-  addShell(new THREE.SphereGeometry(0.28, 14, 14), [ 2.35, 0.68, 0]);
+  addShell(new THREE.SphereGeometry(0.27, 12, 12), [-2.32, 0.72, 0]);
+  addShell(new THREE.SphereGeometry(0.27, 12, 12), [ 2.32, 0.72, 0]);
   /* Forearms */
-  addShell(new THREE.CylinderGeometry(0.28, 0.22, 1.85, 16), [-2.42, -0.28, 0]);
-  addShell(new THREE.CylinderGeometry(0.28, 0.22, 1.85, 16), [ 2.42, -0.28, 0]);
-  /* Hands - more realistic shape */
-  const handG = new THREE.SphereGeometry(0.28, 14, 14);
-  const lHand = addShell(handG, [-2.48, -1.28, 0], 0, [1.3, 0.7, 0.5]);
-  const rHand = addShell(handG, [ 2.48, -1.28, 0], 0, [1.3, 0.7, 0.5]);
+  addShell(new THREE.CylinderGeometry(0.26, 0.20, 1.75, 14), [-2.38, -0.22, 0]);
+  addShell(new THREE.CylinderGeometry(0.26, 0.20, 1.75, 14), [ 2.38, -0.22, 0]);
+  /* Hands */
+  const handG = new THREE.SphereGeometry(0.26, 12, 12);
+  const lHand = addShell(handG, [-2.42, -1.22, 0]);
+  lHand.children.forEach(m => m.scale.set(1.2, 0.8, 0.7));
+  const rHand = addShell(handG, [ 2.42, -1.22, 0]);
+  rHand.children.forEach(m => m.scale.set(1.2, 0.8, 0.7));
   /* Hip joints */
-  addShell(new THREE.SphereGeometry(0.48, 16, 16), [-0.82, -1.42, 0]);
-  addShell(new THREE.SphereGeometry(0.48, 16, 16), [ 0.82, -1.42, 0]);
-  /* Thighs - better muscle shape */
-  addShell(new THREE.CylinderGeometry(0.62, 0.52, 2.95, 18), [-0.84, -3.1, 0],  0.04);
-  addShell(new THREE.CylinderGeometry(0.62, 0.52, 2.95, 18), [ 0.84, -3.1, 0], -0.04);
+  addShell(new THREE.SphereGeometry(0.46, 14, 14), [-0.78, -1.36, 0]);
+  addShell(new THREE.SphereGeometry(0.46, 14, 14), [ 0.78, -1.36, 0]);
+  /* Thighs */
+  addShell(new THREE.CylinderGeometry(0.60, 0.50, 2.85, 16), [-0.80, -3.02, 0],  0.04);
+  addShell(new THREE.CylinderGeometry(0.60, 0.50, 2.85, 16), [ 0.80, -3.02, 0], -0.04);
   /* Knee joints */
-  addShell(new THREE.SphereGeometry(0.42, 14, 14), [-0.88, -4.6, 0]);
-  addShell(new THREE.SphereGeometry(0.42, 14, 14), [ 0.88, -4.6, 0]);
+  addShell(new THREE.SphereGeometry(0.40, 12, 12), [-0.84, -4.54, 0]);
+  addShell(new THREE.SphereGeometry(0.40, 12, 12), [ 0.84, -4.54, 0]);
   /* Shins */
-  addShell(new THREE.CylinderGeometry(0.38, 0.28, 2.65, 16), [-0.88, -5.95, 0]);
-  addShell(new THREE.CylinderGeometry(0.38, 0.28, 2.65, 16), [ 0.88, -5.95, 0]);
-  /* Feet - better shape */
-  const footG = new THREE.SphereGeometry(0.34, 14, 14);
-  const lFoot = addShell(footG, [-0.88, -7.35, 0.4], 0, [1.5, 0.45, 2.0]);
-  const rFoot = addShell(footG, [ 0.88, -7.35, 0.4], 0, [1.5, 0.45, 2.0]);
+  addShell(new THREE.CylinderGeometry(0.36, 0.26, 2.55, 14), [-0.84, -5.85, 0]);
+  addShell(new THREE.CylinderGeometry(0.36, 0.26, 2.55, 14), [ 0.84, -5.85, 0]);
+  /* Feet */
+  const footG = new THREE.SphereGeometry(0.32, 12, 12);
+  const lFoot = addShell(footG, [-0.84, -7.22, 0.38]);
+  lFoot.children.forEach(m => m.scale.set(1.4, 0.5, 1.9));
+  const rFoot = addShell(footG, [ 0.84, -7.22, 0.38]);
+  rFoot.children.forEach(m => m.scale.set(1.4, 0.5, 1.9));
 
   /* ── SYSTEM COLOURS ── */
   const SYS_HEX = {
     skeletal:0xc8e8ff, muscular:0xff6b35, circulatory:0xff3a5c,
     respiratory:0x00bfff, digestive:0xf5a623, nervous:0xbb55ff,
-    endocrine:0x00ff88, urinary:0xa855f7, lymphatic:0x38bdf8,
-    skin:0xfbbf24, eye:0x22d3ee, ear:0xf472b6,
   };
 
-  const BODY_PARTS = {
-    head:{ y:5.0, z:0.8, zoom:8, rotX:-0.3 },
-    chest:{ y:2.5, z:0.5, zoom:10, rotX:-0.2 },
-    torso:{ y:0.5, z:0.3, zoom:12, rotX:0 },
-    abdomen:{ y:-0.8, z:0.4, zoom:10, rotX:0.1 },
-    arms:{ y:1.0, z:0, zoom:14, rotX:-0.1 },
-    legs:{ y:-4.0, z:0.5, zoom:12, rotX:0.15 },
-  };
-
-  /* Fresnel-style glowing material */
   function sysMat(sys, extra) {
     return new THREE.MeshPhongMaterial(Object.assign({
       color: SYS_HEX[sys],
       emissive: SYS_HEX[sys],
-      emissiveIntensity: 0.5,
-      specular: SYS_HEX[sys],
-      shininess: 60,
-      transparent: true, opacity: 0.90,
-    }, extra || {}));
-  }
-
-  /* Glass-like material for organs */
-  function organMat(sys, extra) {
-    return new THREE.MeshPhongMaterial(Object.assign({
-      color: SYS_HEX[sys],
-      emissive: SYS_HEX[sys],
-      emissiveIntensity: 0.3,
-      specular: 0xffffff,
-      shininess: 100,
-      transparent: true, opacity: 0.75,
+      emissiveIntensity: 0.4,
+      transparent: true, opacity: 0.88,
     }, extra || {}));
   }
 
   function tube(pts, r, sys, segs, radial) {
     const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p)));
-    const geo = new THREE.TubeGeometry(curve, segs || 32, r, radial || 8, false);
-    return new THREE.Mesh(geo, sysMat(sys, { opacity: 0.95 }));
+    const geo = new THREE.TubeGeometry(curve, segs || 28, r, radial || 6, false);
+    return new THREE.Mesh(geo, sysMat(sys, { opacity: 0.92 }));
   }
 
   /* ── BUILD SYSTEMS ── */
-  const SYSTEMS = ['skeletal','muscular','circulatory','respiratory','digestive','nervous','endocrine','urinary','lymphatic','skin','eye','ear'];
+  const SYSTEMS = ['skeletal','muscular','circulatory','respiratory','digestive','nervous'];
   const sysGroups = {};
-  const sysBodies = {}; // body part focus per system
   SYSTEMS.forEach(s => {
     const g = new THREE.Group();
     g.visible = false;
     bodyGroup.add(g);
     sysGroups[s] = g;
   });
-  sysBodies.skeletal = 'torso';
-  sysBodies.muscular = 'torso';
-  sysBodies.circulatory = 'chest';
-  sysBodies.respiratory = 'chest';
-  sysBodies.digestive = 'abdomen';
-  sysBodies.nervous = 'head';
-  sysBodies.endocrine = 'chest';
-  sysBodies.urinary = 'abdomen';
-  sysBodies.lymphatic = 'torso';
-  sysBodies.skin = 'torso';
-  sysBodies.eye = 'head';
-  sysBodies.ear = 'head';
 
   /* SKELETAL */
   (function(){
@@ -708,136 +482,100 @@ if (typeof THREE === 'undefined') {
       g.add(mesh);
       return mesh;
     };
-    /* Skull - improved with more detail */
-    add(new THREE.SphereGeometry(0.95, 24, 24), [0, 5.05, 0]);
-    /* Cranium top */
-    add(new THREE.SphereGeometry(0.78, 20, 20), [0, 5.35, -0.1]);
-    /* Jaw */
-    const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.70, 14, 10, 0, Math.PI*2, Math.PI/2, Math.PI/2), m);
-    jaw.position.set(0, 4.22, 0.22); jaw.scale.set(1, 0.55, 0.95); g.add(jaw);
-    /* Eye sockets */
-    add(new THREE.SphereGeometry(0.15, 10, 10), [-0.32, 5.1, 0.75]);
-    add(new THREE.SphereGeometry(0.15, 10, 10), [ 0.32, 5.1, 0.75]);
-    /* Nasal */
-    add(new THREE.CylinderGeometry(0.06, 0.08, 0.25, 6), [0, 4.82, 0.92]);
-    /* Spine - more vertebrae */
-    for (let i = 0; i < 24; i++) {
-      const y = 3.72 - i * 0.22;
-      const r = i < 7 ? 0.18 : i < 16 ? 0.16 : 0.14;
-      add(new THREE.CylinderGeometry(r, r, 0.12, 12), [0, y, -0.12]);
+    /* Skull */
+    add(new THREE.SphereGeometry(0.92, 18, 18), [0, 5.0, 0]);
+    const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.68, 12, 8, 0, Math.PI*2, Math.PI/2, Math.PI/2), m);
+    jaw.position.set(0, 4.22, 0.22); jaw.scale.set(1, 0.6, 1); g.add(jaw);
+    /* Spine discs */
+    for (let i = 0; i < 20; i++) {
+      const y = 3.65 - i * 0.24;
+      const r = i < 7 ? 0.22 : i < 14 ? 0.20 : 0.17;
+      add(new THREE.CylinderGeometry(r, r, 0.1, 10), [0, y, -0.12]);
     }
     /* Sternum */
-    add(new THREE.CylinderGeometry(0.10, 0.08, 2.0, 10), [0, 2.0, 0.92]);
-    /* Clavicles - curved */
-    const cl = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.1, 10), m);
-    cl.position.set(-0.92, 3.48, 0.52); cl.rotation.z = 1.25; g.add(cl);
-    const cr = cl.clone(); cr.position.x = 0.92; cr.rotation.z = -1.25; g.add(cr);
-    /* Scapulae */
-    add(new THREE.SphereGeometry(0.28, 10, 10), [-1.5, 2.6, -0.3], 0, [1.2, 0.8, 0.5]);
-    add(new THREE.SphereGeometry(0.28, 10, 10), [ 1.5, 2.6, -0.3], 0, [1.2, 0.8, 0.5]);
-    /* Ribcage - more ribs, better shape */
-    for (let i = 0; i < 10; i++) {
-      const y = 2.72 - i * 0.21;
-      const sc = 1 - i * 0.025;
-      const rib = new THREE.Mesh(new THREE.TorusGeometry(0.90 * sc, 0.05, 8, 24, Math.PI * 1.38), m);
+    add(new THREE.CylinderGeometry(0.09, 0.09, 1.85, 8), [0, 2.05, 0.88]);
+    /* Clavicles */
+    const cl = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 2.05, 8), m);
+    cl.position.set(-0.88, 3.42, 0.5); cl.rotation.z = 1.28; g.add(cl);
+    const cr = cl.clone(); cr.position.x = 0.88; cr.rotation.z = -1.28; g.add(cr);
+    /* Ribcage */
+    for (let i = 0; i < 9; i++) {
+      const y = 2.65 - i * 0.22;
+      const sc = 1 - i * 0.03;
+      const rib = new THREE.Mesh(new THREE.TorusGeometry(0.88 * sc, 0.055, 6, 22, Math.PI * 1.42), m);
       rib.position.set(0, y, 0);
       rib.rotation.x = Math.PI / 2;
-      rib.rotation.y = -(Math.PI * 1.38 - Math.PI) / 2;
+      rib.rotation.y = -(Math.PI * 1.42 - Math.PI) / 2;
       g.add(rib);
     }
-    /* Pelvis */
-    const pelvis = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.18, 12, 28), m);
-    pelvis.position.set(0, -0.85, 0); pelvis.rotation.x = Math.PI / 2; g.add(pelvis);
-    /* Sacrum */
-    add(new THREE.SphereGeometry(0.35, 12, 12), [0, -1.2, -0.25], 0, [0.8, 1.2, 0.6]);
-    /* Humerus - more realistic */
-    add(new THREE.CylinderGeometry(0.11, 0.09, 2.2, 12), [-2.22, 1.85, 0]);
-    add(new THREE.CylinderGeometry(0.11, 0.09, 2.2, 12), [ 2.22, 1.85, 0]);
-    /* Radius & ulna - separate bones */
-    add(new THREE.CylinderGeometry(0.07, 0.06, 1.82, 10), [-2.5, -0.25,  0.08]);
-    add(new THREE.CylinderGeometry(0.06, 0.05, 1.78, 10), [-2.32, -0.25, -0.08]);
-    add(new THREE.CylinderGeometry(0.07, 0.06, 1.82, 10), [ 2.5, -0.25,  0.08]);
-    add(new THREE.CylinderGeometry(0.06, 0.05, 1.78, 10), [ 2.32, -0.25, -0.08]);
-    /* Hand bones (carpals approximation) */
-    add(new THREE.SphereGeometry(0.12, 8, 8), [-2.48, -1.2, 0]);
-    add(new THREE.SphereGeometry(0.12, 8, 8), [ 2.48, -1.2, 0]);
-    /* Femur - larger */
-    add(new THREE.CylinderGeometry(0.18, 0.14, 2.95, 12), [-0.85, -3.1, 0]);
-    add(new THREE.CylinderGeometry(0.18, 0.14, 2.95, 12), [ 0.85, -3.1, 0]);
-    /* Patellae */
-    add(new THREE.SphereGeometry(0.12, 10, 10), [-0.88, -4.35, 0.28]);
-    add(new THREE.SphereGeometry(0.12, 10, 10), [ 0.88, -4.35, 0.28]);
+    /* Pelvis torus */
+    const pelvis = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.19, 10, 26), m);
+    pelvis.position.set(0, -0.82, 0); pelvis.rotation.x = Math.PI / 2; g.add(pelvis);
+    /* Humerus */
+    add(new THREE.CylinderGeometry(0.10, 0.09, 2.1, 8), [-2.20, 1.85, 0]);
+    add(new THREE.CylinderGeometry(0.10, 0.09, 2.1, 8), [ 2.20, 1.85, 0]);
+    /* Radius & ulna */
+    add(new THREE.CylinderGeometry(0.065, 0.065, 1.75, 7), [-2.48, -0.22,  0.07]);
+    add(new THREE.CylinderGeometry(0.065, 0.065, 1.75, 7), [-2.28, -0.22, -0.07]);
+    add(new THREE.CylinderGeometry(0.065, 0.065, 1.75, 7), [ 2.48, -0.22,  0.07]);
+    add(new THREE.CylinderGeometry(0.065, 0.065, 1.75, 7), [ 2.28, -0.22, -0.07]);
+    /* Femur */
+    add(new THREE.CylinderGeometry(0.17, 0.13, 2.85, 10), [-0.80, -3.02, 0]);
+    add(new THREE.CylinderGeometry(0.17, 0.13, 2.85, 10), [ 0.80, -3.02, 0]);
     /* Tibia / fibula */
-    add(new THREE.CylinderGeometry(0.13, 0.10, 2.65, 12), [-0.90, -5.95, 0]);
-    add(new THREE.CylinderGeometry(0.07, 0.06, 2.55,  10), [-0.70, -5.95, 0]);
-    add(new THREE.CylinderGeometry(0.13, 0.10, 2.65, 12), [ 0.90, -5.95, 0]);
-    add(new THREE.CylinderGeometry(0.07, 0.06, 2.55,  10), [ 0.70, -5.95, 0]);
-    /* Ankle bones */
-    add(new THREE.SphereGeometry(0.10, 8, 8), [-0.88, -7.2, 0.15]);
-    add(new THREE.SphereGeometry(0.10, 8, 8), [ 0.88, -7.2, 0.15]);
-    /* Joint spheres - all major joints */
-    [[-2.05,3.25,0],[2.05,3.25,0],[-2.35,0.68,0],[2.35,0.68,0],
-     [-0.85,-1.42,0],[0.85,-1.42,0],[-0.90,-4.6,0],[0.90,-4.6,0]
-    ].forEach(p => add(new THREE.SphereGeometry(0.20, 12, 12), p));
+    add(new THREE.CylinderGeometry(0.12, 0.09, 2.55, 10), [-0.87, -5.85, 0]);
+    add(new THREE.CylinderGeometry(0.06, 0.05, 2.45,  8), [-0.67, -5.85, 0]);
+    add(new THREE.CylinderGeometry(0.12, 0.09, 2.55, 10), [ 0.87, -5.85, 0]);
+    add(new THREE.CylinderGeometry(0.06, 0.05, 2.45,  8), [ 0.67, -5.85, 0]);
+    /* Joint spheres */
+    [[-2.0,3.2,0],[2.0,3.2,0],[-2.32,0.72,0],[2.32,0.72,0],
+     [-0.78,-1.36,0],[0.78,-1.36,0],[-0.84,-4.54,0],[0.84,-4.54,0]
+    ].forEach(p => add(new THREE.SphereGeometry(0.18, 10, 10), p));
   })();
 
   /* MUSCULAR */
   (function(){
     const g = sysGroups.muscular;
-    function muscle(pos, sx, sy, sz, geoSize) {
+    function muscle(pos, sx, sy, sz) {
       const m = new THREE.Mesh(
-        new THREE.SphereGeometry(geoSize || 0.5, 14, 14),
-        sysMat('muscular', { opacity: 0.65, transparent: true })
+        new THREE.SphereGeometry(0.5, 12, 12),
+        sysMat('muscular', { opacity: 0.60, transparent: true })
       );
       m.position.set(...pos);
       m.scale.set(sx, sy, sz);
       g.add(m); return m;
     }
-    /* Sternocleidomastoid */
-    muscle([0, 4.0, 0.42], 0.4, 1.2, 0.3, 0.25);
-    /* Pectorals - larger, more detailed */
-    muscle([-0.72, 2.52, 0.78], 1.35, 0.75, 0.55, 0.55);
-    muscle([ 0.72, 2.52, 0.78], 1.35, 0.75, 0.55, 0.55);
-    /* Trapezius - upper back */
-    muscle([0, 3.2, -0.42], 1.75, 0.75, 0.40, 0.55);
-    /* Deltoids - shoulder muscles */
-    muscle([-2.1, 3.0, 0.08], 1.1, 0.8, 1.0, 0.5);
-    muscle([ 2.1, 3.0, 0.08], 1.1, 0.8, 1.0, 0.5);
-    /* Latissimus dorsi */
-    muscle([-1.4, 1.8, -0.5], 1.0, 1.5, 0.4, 0.5);
-    muscle([ 1.4, 1.8, -0.5], 1.0, 1.5, 0.4, 0.5);
-    /* Abs - six-pack */
-    for (let row = 0; row < 4; row++) {
-      muscle([-0.34, 1.6 - row * 0.48, 1.05], 0.55, 0.38, 0.28, 0.4);
-      muscle([ 0.34, 1.6 - row * 0.48, 1.05], 0.55, 0.38, 0.28, 0.4);
+    /* Pectorals */
+    muscle([-0.68, 2.55, 0.72], 1.25, 0.70, 0.52);
+    muscle([ 0.68, 2.55, 0.72], 1.25, 0.70, 0.52);
+    /* Trapezius */
+    muscle([0, 3.05, -0.45], 1.65, 0.7, 0.38);
+    /* Deltoids */
+    muscle([-2.08, 3.0, 0.05], 1, 0.75, 0.95);
+    muscle([ 2.08, 3.0, 0.05], 1, 0.75, 0.95);
+    /* Abs */
+    for (let row = 0; row < 3; row++) {
+      muscle([-0.32, 1.7 - row * 0.52, 1.0], 0.58, 0.40, 0.30);
+      muscle([ 0.32, 1.7 - row * 0.52, 1.0], 0.58, 0.40, 0.30);
     }
-    /* Obliques */
-    muscle([-0.8, 0.8, 0.5], 0.5, 1.2, 0.4, 0.45);
-    muscle([ 0.8, 0.8, 0.5], 0.5, 1.2, 0.4, 0.45);
     /* Biceps */
-    muscle([-2.2, 2.15, 0.35], 0.9, 1.1, 2.2, 0.45);
-    muscle([ 2.2, 2.15, 0.35], 0.9, 1.1, 2.2, 0.45);
-    /* Triceps */
-    muscle([-2.22, 1.8, -0.25], 0.75, 1.0, 1.8, 0.4);
-    muscle([ 2.22, 1.8, -0.25], 0.75, 1.0, 1.8, 0.4);
+    muscle([-2.18, 2.2, 0.32], 0.88, 1.0, 2.10);
+    muscle([ 2.18, 2.2, 0.32], 0.88, 1.0, 2.10);
     /* Forearms */
-    muscle([-2.38, -0.2, 0.12], 0.85, 0.9, 2.1, 0.4);
-    muscle([ 2.38, -0.2, 0.12], 0.85, 0.9, 2.1, 0.4);
-    /* Glutes - larger */
-    muscle([-0.65, -1.1, -0.65], 1.3, 1.2, 1.1, 0.6);
-    muscle([ 0.65, -1.1, -0.65], 1.3, 1.2, 1.1, 0.6);
-    /* Quads - thigh muscles */
-    muscle([-0.85, -2.85, 0.45], 1.05, 0.95, 2.3, 0.55);
-    muscle([ 0.85, -2.85, 0.45], 1.05, 0.95, 2.3, 0.55);
+    muscle([-2.36, -0.22, 0.1], 0.82, 0.88, 2.05);
+    muscle([ 2.36, -0.22, 0.1], 0.82, 0.88, 2.05);
+    /* Glutes */
+    muscle([-0.62, -1.05, -0.62], 1.2, 1.15, 1.0);
+    muscle([ 0.62, -1.05, -0.62], 1.2, 1.15, 1.0);
+    /* Quads */
+    muscle([-0.80, -2.8,  0.42], 1.0, 0.9, 2.25);
+    muscle([ 0.80, -2.8,  0.42], 1.0, 0.9, 2.25);
     /* Hamstrings */
-    muscle([-0.85, -2.85, -0.42], 0.95, 0.9, 2.25, 0.5);
-    muscle([ 0.85, -2.85, -0.42], 0.95, 0.9, 2.25, 0.5);
-    /* Calves - gastrocnemius */
-    muscle([-0.86, -5.55, -0.3], 0.88, 0.9, 2.0, 0.48);
-    muscle([ 0.86, -5.55, -0.3], 0.88, 0.9, 2.0, 0.48);
-    /* Soleus under calves */
-    muscle([-0.86, -6.0, 0.0], 0.7, 0.6, 1.5, 0.4);
-    muscle([ 0.86, -6.0, 0.0], 0.7, 0.6, 1.5, 0.4);
+    muscle([-0.80, -2.8, -0.38], 0.9, 0.85, 2.2);
+    muscle([ 0.80, -2.8, -0.38], 0.9, 0.85, 2.2);
+    /* Calves */
+    muscle([-0.82, -5.55, -0.28], 0.85, 0.88, 1.95);
+    muscle([ 0.82, -5.55, -0.28], 0.85, 0.88, 1.95);
   })();
 
   /* CIRCULATORY */
@@ -972,234 +710,6 @@ if (typeof THREE === 'undefined') {
     }
   })();
 
-  /* ENDOCRINE */
-  (function(){
-    const g = sysGroups.endocrine;
-    const m = sysMat('endocrine', { opacity: 0.75, transparent: true });
-    const glowM = sysMat('endocrine', { opacity: 0.55, transparent: true, emissiveIntensity: 0.7 });
-    /* Pituitary */
-    const pit = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), m);
-    pit.position.set(0, 5.45, 0.15); g.add(pit);
-    /* Thyroid */
-    const thy = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 14), m);
-    thy.position.set(0.05, 3.42, 0.45); thy.scale.set(1.4, 0.9, 0.85); g.add(thy);
-    /* Parathyroids */
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), glowM, [-0.18, 3.55, 0.42]));
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), glowM, [ 0.22, 3.55, 0.42]));
-    /* Adrenal glands */
-    const adrL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 10), m);
-    adrL.position.set(-0.55, 0.95, -0.15); adrL.scale.set(1.1, 0.7, 0.8); g.add(adrL);
-    const adrR = adrL.clone(); adrR.position.set(0.55, 0.95, -0.15); g.add(adrR);
-    /* Pancreas (also endocrine) */
-    const panc = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 12), m);
-    panc.position.set(0.12, 0.95, 0.18); panc.scale.set(1.6, 0.55, 0.65); g.add(panc);
-    /* Ovaries / Testes representation */
-    const ovL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 10), glowM);
-    ovL.position.set(-0.48, -1.35, 0.12); ovL.scale.set(0.9, 1.1, 0.8); g.add(ovL);
-    const ovR = ovL.clone(); ovR.position.set(0.48, -1.35, 0.12); g.add(ovR);
-    /* Pineal */
-    const pine = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), glowM);
-    pine.position.set(0, 4.65, -0.35); g.add(pine);
-    /* Hypothalamus region */
-    const hypo = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), m);
-    hypo.position.set(0, 5.25, 0.1); g.add(hypo);
-  })();
-
-  /* URINARY */
-  (function(){
-    const g = sysGroups.urinary;
-    const m = sysMat('urinary', { opacity: 0.8, transparent: true });
-    const tubM = sysMat('urinary', { opacity: 0.9 });
-    /* Kidneys */
-    const kdL = new THREE.Mesh(new THREE.SphereGeometry(0.35, 14, 14), m);
-    kdL.position.set(-0.62, 0.72, -0.18); kdL.scale.set(0.75, 1.15, 0.65); g.add(kdL);
-    const kdR = kdL.clone(); kdR.position.set(0.62, 0.72, -0.18); g.add(kdR);
-    /* Renal pyramids (stylised) */
-    const pyrL = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.4, 6), m);
-    pyrL.position.set(-0.58, 0.55, -0.1); pyrL.rotation.x = Math.PI; g.add(pyrL);
-    const pyrR = pyrL.clone(); pyrR.position.set(0.58, 0.55, -0.1); g.add(pyrR);
-    /* Ureters */
-    g.add(tube([[-0.5,0.25,-0.15],[-0.42,-0.8,-0.08],[-0.32,-1.85,0.05],[-0.28,-2.55,0.12]], 0.055, 'urinary'));
-    g.add(tube([[ 0.5,0.25,-0.15],[ 0.42,-0.8,-0.08],[ 0.32,-1.85,0.05],[ 0.28,-2.55,0.12]], 0.055, 'urinary'));
-    /* Bladder */
-    const bla = new THREE.Mesh(new THREE.SphereGeometry(0.42, 14, 14), m);
-    bla.position.set(0, -2.85, 0.15); bla.scale.set(1.1, 0.9, 0.85); g.add(bla);
-    /* Urethra */
-    g.add(tube([[0,-3.2,0.1],[0,-3.65,0],[0,-3.95,-0.08]], 0.04, 'urinary', 8));
-    /* Renal arteries */
-    g.add(tube([[-0.8,0.72,-0.2],[-0.62,0.72,-0.18]], 0.06, 'urinary', 6));
-    g.add(tube([[ 0.8,0.72,-0.2],[ 0.62,0.72,-0.18]], 0.06, 'urinary', 6));
-  })();
-
-  /* LYMPHATIC */
-  (function(){
-    const g = sysGroups.lymphatic;
-    const m = sysMat('lymphatic', { opacity: 0.7, transparent: true });
-    const nodeM = sysMat('lymphatic', { opacity: 0.85, emissiveIntensity: 0.4 });
-    /* Thymus */
-    const thyM = new THREE.Mesh(new THREE.SphereGeometry(0.38, 12, 12), m);
-    thyM.position.set(0.1, 2.85, 0.2); thyM.scale.set(1.3, 0.7, 0.6); g.add(thyM);
-    /* Spleen */
-    const spl = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 12), m);
-    spl.position.set(0.95, 0.65, -0.35); spl.scale.set(1.3, 0.85, 0.7); g.add(spl);
-    /* Lymph nodes - cervical */
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), nodeM, [-0.35, 4.25, 0.25]));
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), nodeM, [ 0.35, 4.25, 0.25]));
-    /* Axillary */
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), nodeM, [-1.85, 2.35, 0.05]));
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), nodeM, [ 1.85, 2.35, 0.05]));
-    /* Inguinal */
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), nodeM, [-0.65, -1.85, 0.1]));
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), nodeM, [ 0.65, -1.85, 0.1]));
-    /* Thoracic duct */
-    g.add(tube([[0,2.8,-0.05],[0,1.5,-0.12],[0,0.5,-0.15],[0,-0.85,-0.1]], 0.04, 'lymphatic', 20));
-    /* Right lymphatic duct */
-    g.add(tube([[0.35,2.95,0.15],[0.45,3.1,0.2],[0.5,3.3,0.15]], 0.035, 'lymphatic', 8));
-    /* Lymphatic vessels - arm */
-    g.add(tube([[-1.85,2.35,0.05],[-1.95,1.8,0],[-2.15,0.85,0],[-2.28,-0.15,0]], 0.03, 'lymphatic', 12));
-    g.add(tube([[ 1.85,2.35,0.05],[ 1.95,1.8,0],[ 2.15,0.85,0],[ 2.28,-0.15,0]], 0.03, 'lymphatic', 12));
-    /* Lymphatic vessels - leg */
-    g.add(tube([[-0.65,-1.85,0.1],[-0.72,-3.2,0],[-0.78,-4.85,0],[-0.82,-6.5,0]], 0.03, 'lymphatic', 12));
-    g.add(tube([[ 0.65,-1.85,0.1],[ 0.72,-3.2,0],[ 0.78,-4.85,0],[ 0.82,-6.5,0]], 0.03, 'lymphatic', 12));
-  })();
-
-  /* INTEGUMENTARY (SKIN) */
-  (function(){
-    const g = sysGroups.skin;
-    const m = sysMat('skin', { opacity: 0.35, transparent: true });
-    /* Skin surface overlay - slightly larger than body shell */
-    const skinGeo = new THREE.CylinderGeometry(1.68, 1.42, 12.5, 24);
-    const skinMesh = new THREE.Mesh(skinGeo, m);
-    skinMesh.position.set(0, -0.85, 0);
-    g.add(skinMesh);
-    /* Head skin */
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(1.18, 20, 20), m, [0, 5.1, 0]));
-    /* Hair follicles (stylised) */
-    const hairM = sysMat('skin', { opacity: 0.5 });
-    for (let i = 0; i < 40; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const h = Math.random();
-      const y = 4.8 - h * 10.5;
-      const r = 1.0 + Math.abs(y - 0) * 0.08;
-      const x = Math.cos(angle) * r * 0.92;
-      const z = Math.sin(angle) * r * 0.92;
-      if (Math.random() > 0.7) {
-        const hair = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.01, 0.25, 4), hairM);
-        hair.position.set(x, y, z);
-        hair.rotation.x = Math.atan2(z, y - (y + 0.15)) + Math.PI;
-        hair.rotation.z = angle;
-        g.add(hair);
-      }
-    }
-    /* Sweat glands (stylised points) */
-    const sweatM = sysMat('skin', { opacity: 0.6, emissiveIntensity: 0.3 });
-    for (let i = 0; i < 30; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const y = 3.5 - Math.random() * 8;
-      const r = 1.1 + Math.abs(y) * 0.06;
-      const gld = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), sweatM);
-      gld.position.set(Math.cos(angle) * r, y, Math.sin(angle) * r);
-      g.add(gld);
-    }
-    /* Fingernails */
-    const nailM = sysMat('skin', { opacity: 0.75 });
-    [[-2.48,-1.45,0.35],[2.48,-1.45,0.35]].forEach(pos => {
-      const nail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 0.02), nailM);
-      nail.position.set(...pos); g.add(nail);
-    });
-    /* Toenails */
-    [[-0.88,-7.52,0.72],[0.88,-7.52,0.72]].forEach(pos => {
-      const nail = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.15, 0.02), nailM);
-      nail.position.set(...pos); g.add(nail);
-    });
-  })();
-
-  /* VISUAL (EYE) */
-  (function(){
-    const g = sysGroups.eye;
-    const m = sysMat('eye', { opacity: 0.85, transparent: true });
-    const pupilM = sysMat('eye', { opacity: 1.0, emissiveIntensity: 0.6 });
-    /* Eyes */
-    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), m);
-    eyeL.position.set(-0.32, 5.12, 0.82); g.add(eyeL);
-    const eyeR = eyeL.clone(); eyeR.position.set(0.32, 5.12, 0.82); g.add(eyeR);
-    /* Iris */
-    const irisL = new THREE.Mesh(new THREE.CircleGeometry(0.14, 16), m);
-    irisL.position.set(-0.32, 5.12, 1.02); g.add(irisL);
-    const irisR = irisL.clone(); irisR.position.set(0.32, 5.12, 1.02); g.add(irisR);
-    /* Pupil */
-    const pupL = new THREE.Mesh(new THREE.CircleGeometry(0.06, 12), pupilM);
-    pupL.position.set(-0.32, 5.12, 1.03); g.add(pupL);
-    const pupR = pupL.clone(); pupR.position.set(0.32, 5.12, 1.03); g.add(pupR);
-    /* Cornea */
-    const corL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12, 0, Math.PI * 2, 0, Math.PI/2), m);
-    corL.position.set(-0.32, 5.12, 0.95); corL.rotation.x = -0.3; g.add(corL);
-    const corR = corL.clone(); corR.position.set(0.32, 5.12, 0.95); corR.rotation.x = -0.3; g.add(corR);
-    /* Lens */
-    const lnsL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 10), m);
-    lnsL.position.set(-0.32, 5.12, 1.1); lnsL.scale.set(1, 1, 0.6); g.add(lnsL);
-    const lnsR = lnsL.clone(); lnsR.position.set(0.32, 5.12, 1.1); g.add(lnsR);
-    /* Optic nerve */
-    g.add(tube([[-0.32,5.12,0.82],[-0.28,5.0,0.55],[-0.2,4.65,0.15],[0,4.2,-0.1]], 0.045, 'eye', 12));
-    g.add(tube([[ 0.32,5.12,0.82],[ 0.28,5.0,0.55],[ 0.2,4.65,0.15],[0,4.2,-0.1]], 0.045, 'eye', 12));
-    /* Lacrimal gland */
-    const lacL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), m);
-    lacL.position.set(-0.48, 5.35, 0.58); g.add(lacL);
-    const lacR = lacL.clone(); lacR.position.set(0.48, 5.35, 0.58); g.add(lacR);
-    /* Eyelids */
-    const lidM = sysMat('skin', { opacity: 0.6 });
-    const lidL = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.22, 0.04, 16, 1, true, 0, Math.PI), lidM);
-    lidL.position.set(-0.32, 5.25, 0.95); lidL.rotation.x = Math.PI / 2; g.add(lidL);
-    const lidR = lidL.clone(); lidR.position.set(0.32, 5.25, 0.95); g.add(lidR);
-  })();
-
-  /* AUDITORY (EAR) */
-  (function(){
-    const g = sysGroups.ear;
-    const m = sysMat('ear', { opacity: 0.8, transparent: true });
-    /* Outer ear (pinna) */
-    const pinL = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.06, 8, 16, Math.PI * 1.5), m);
-    pinL.position.set(-1.15, 5.0, 0.15); pinL.rotation.set(0.3, 0.5, 0.4); g.add(pinL);
-    const pinR = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.06, 8, 16, Math.PI * 1.5), m);
-    pinR.position.set( 1.15, 5.0, 0.15); pinR.rotation.set(0.3, -0.5, -0.4); g.add(pinR);
-    /* Ear canal */
-    g.add(tube([[-1.15,5.0,0.15],[-1.05,4.85,0.25],[-0.9,4.65,0.35],[-0.75,4.45,0.4]], 0.06, 'ear', 12));
-    g.add(tube([[ 1.15,5.0,0.15],[ 1.05,4.85,0.25],[ 0.9,4.65,0.35],[ 0.75,4.45,0.4]], 0.06, 'ear', 12));
-    /* Eardrum */
-    const drL = new THREE.Mesh(new THREE.CircleGeometry(0.1, 16), m);
-    drL.position.set(-0.72, 4.42, 0.42); drL.rotation.y = -Math.PI / 2; g.add(drL);
-    const drR = drL.clone(); drR.position.set(0.72, 4.42, 0.42); drR.rotation.y = Math.PI / 2; g.add(drR);
-    /* Ossicles - malleus */
-    const malL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.03), m);
-    malL.position.set(-0.68, 4.42, 0.4); g.add(malL);
-    const malR = malL.clone(); malR.position.set(0.68, 4.42, 0.4); g.add(malR);
-    /* Incus */
-    const incL = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.03), m);
-    incL.position.set(-0.62, 4.48, 0.38); g.add(incL);
-    const incR = incL.clone(); incR.position.set(0.62, 4.48, 0.38); g.add(incR);
-    /* Stapes */
-    const staL = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.015, 6, 8), m);
-    staL.position.set(-0.58, 4.45, 0.36); staL.rotation.y = Math.PI / 2; g.add(staL);
-    const staR = staL.clone(); staR.position.set(0.58, 4.45, 0.36); g.add(staR);
-    /* Cochlea */
-    const cocL = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), m);
-    cocL.position.set(-0.58, 4.18, 0.25); cocL.scale.set(1.2, 1.5, 1); g.add(cocL);
-    const cocR = cocL.clone(); cocR.position.set(0.58, 4.18, 0.25); g.add(cocR);
-    /* Semi-circular canals */
-    const sccL = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.02, 6, 12, Math.PI * 2), m);
-    sccL.position.set(-0.52, 4.32, 0.12); sccL.rotation.x = Math.PI / 2; g.add(sccL);
-    const sccR = sccL.clone(); sccR.position.set(0.52, 4.32, 0.12); g.add(sccR);
-    /* Vestibular nerve */
-    g.add(tube([[-0.52,4.22,0.2],[-0.38,4.1,0.1],[-0.15,3.85,-0.05]], 0.025, 'ear', 8));
-    g.add(tube([[ 0.52,4.22,0.2],[ 0.38,4.1,0.1],[ 0.15,3.85,-0.05]], 0.025, 'ear', 8));
-    /* Auditory nerve */
-    g.add(tube([[-0.15,3.85,-0.05],[0,4.0,-0.15],[0,4.5,-0.1]], 0.03, 'ear', 10));
-    g.add(tube([[ 0.15,3.85,-0.05],[0,4.0,-0.15],[0,4.5,-0.1]], 0.03, 'ear', 10));
-    /* Eustachian tube */
-    g.add(tube([[-0.65,4.38,0.35],[-0.58,4.1,0.5],[-0.35,3.75,0.6]], 0.04, 'ear', 8));
-    g.add(tube([[ 0.65,4.38,0.35],[ 0.58,4.1,0.5],[ 0.35,3.75,0.6]], 0.04, 'ear', 8));
-  })();
-
   /* ── INTERACTION ── */
   let autoRotate = true, isDragging = false;
   let prevX = 0, prevY = 0;
@@ -1242,35 +752,19 @@ if (typeof THREE === 'undefined') {
   canvas.addEventListener('touchend', () => { isDragging = false; prevTouch = null; });
 
   /* ── UI FUNCTIONS ── */
-  const systemLabels = {
-    skeletal: 'Skeletal System',
-    muscular: 'Muscular System',
-    circulatory: 'Cardiovascular System',
-    respiratory: 'Respiratory System',
-    digestive: 'Digestive System',
-    nervous: 'Nervous System',
-    endocrine: 'Endocrine System',
-    urinary: 'Urinary System',
-    lymphatic: 'Lymphatic System',
-    skin: 'Integumentary System',
-    eye: 'Visual System',
-    ear: 'Auditory System'
-  };
-
   window.selectSys = function(sys) {
-    const part = sysBodies[sys];
-    if (part && BODY_PARTS[part]) {
-      const bp = BODY_PARTS[part];
-      targetRotX = bp.rotX;
-      targetZoom = bp.zoom;
-    }
+    const badge = document.getElementById('sys-badge');
+    const sysLabels = {
+      skeletal: 'SKELETAL', muscular: 'MUSCULAR', circulatory: 'CIRCULATORY',
+      respiratory: 'RESPIRATORY', digestive: 'DIGESTIVE', nervous: 'NERVOUS'
+    };
     if (activeSystem === sys) {
       sysGroups[sys].visible = false;
       document.querySelector(`.sys-btn[data-s="${sys}"]`).classList.remove('active');
       document.getElementById(`panel-${sys}`).classList.remove('active');
       document.getElementById('panel-default').classList.add('active');
-      document.querySelector('.tagline').textContent = '3D Body Explorer';
       sysLight.intensity = 0;
+      badge.textContent = 'SELECT SYSTEM';
       activeSystem = null;
       return;
     }
@@ -1284,10 +778,9 @@ if (typeof THREE === 'undefined') {
     sysGroups[sys].visible = true;
     document.querySelector(`.sys-btn[data-s="${sys}"]`).classList.add('active');
     document.getElementById(`panel-${sys}`).classList.add('active');
-    document.querySelector('.tagline').textContent = systemLabels[sys] || sys;
     sysLight.color.setHex(SYS_HEX[sys]);
-    sysLight.intensity = 2.0;
-    autoRotate = false;
+    sysLight.intensity = 1.8;
+    badge.textContent = sysLabels[sys] || sys.toUpperCase();
   };
 
   window.toggleShell = function() {
@@ -1310,49 +803,37 @@ if (typeof THREE === 'undefined') {
     requestAnimationFrame(animate);
     t += 0.016;
 
-    if (autoRotate) targetRotY += 0.002;
-    rotY += (targetRotY - rotY) * 0.06;
-    rotX += (targetRotX - rotX) * 0.06;
-    zoom += (targetZoom - zoom) * 0.06;
+    if (autoRotate) targetRotY += 0.0025;
+    rotY += (targetRotY - rotY) * 0.07;
+    rotX += (targetRotX - rotX) * 0.07;
+    zoom += (targetZoom - zoom) * 0.07;
 
     bodyGroup.rotation.y = rotY;
     bodyGroup.rotation.x = rotX;
     camera.position.z = zoom;
 
-    /* Floating particles */
-    particleMesh.rotation.y += 0.0003;
-    const positions = particleGeo.attributes.position.array;
-    for (let i = 0; i < positions.length; i += 3) {
-      positions[i + 1] += Math.sin(t + i) * 0.002;
-    }
-    particleGeo.attributes.position.needsUpdate = true;
-
-    /* Glow ring pulse */
-    glowRing.material.opacity = 0.06 + Math.sin(t * 1.5) * 0.03;
-    glowRing.scale.set(1 + Math.sin(t * 0.8) * 0.1, 1 + Math.sin(t * 0.8) * 0.1, 1);
-
-    /* Heart pulse - more realistic */
+    /* Heart pulse */
     if (heartMesh) {
-      const p = 1 + Math.sin(t * 4.8) * 0.12 + Math.sin(t * 9.6) * 0.03;
+      const p = 1 + Math.sin(t * 4.8) * 0.13;
       heartMesh.scale.set(p, 1.22 * p, 0.88 * p);
     }
-    /* Lung breathe - smoother */
+    /* Lung breathe */
     if (lungL) {
-      const b = 1 + Math.sin(t * 0.8) * 0.08;
+      const b = 1 + Math.sin(t * 0.85) * 0.1;
       lungL.scale.set(0.74 * b, 1.22 * b, 0.64 * b);
       lungR.scale.set(0.74 * b, 1.22 * b, 0.64 * b);
     }
     /* Nervous glow flicker */
     if (activeSystem === 'nervous') {
-      const glow = 0.45 + Math.sin(t * 3.0) * 0.25 + Math.sin(t * 7.0) * 0.1;
+      const glow = 0.42 + Math.sin(t * 3.2) * 0.3;
       nerveMeshes.forEach(m => { if (m.material.emissiveIntensity !== undefined) m.material.emissiveIntensity = glow; });
     }
     /* System light pulse */
     if (sysLight.intensity > 0) {
-      sysLight.intensity = 1.6 + Math.sin(t * 4.0) * 0.4;
+      sysLight.intensity = 1.8 + Math.sin(t * 4.5) * 0.3;
     }
 
-    composer.render();
+    renderer.render(scene, camera);
   }
 
   animate();
@@ -1362,7 +843,6 @@ if (typeof THREE === 'undefined') {
     camera.aspect = W() / H();
     camera.updateProjectionMatrix();
     renderer.setSize(W(), H());
-    composer.setSize(W(), H());
   });
 
   /* ── HIDE LOADER ── */
@@ -1374,20 +854,35 @@ if (typeof THREE === 'undefined') {
 
   /* ── AUTO-SELECT SYSTEM FROM URL/LOCALSTORAGE ── */
   const urlParams = new URLSearchParams(window.location.search);
-  const systemFromUrl = urlParams.get('system');
-  const systemFromStorage = localStorage.getItem('mediscan_3dkey');
-  const autoSystem = systemFromUrl || systemFromStorage || 'skeletal';
-
-  if (autoSystem && SYSTEMS.includes(autoSystem)) {
+  let autoSys = urlParams.get('system') || localStorage.getItem('mediscan_3dkey');
+  console.log('Auto system:', autoSys, 'Available:', Object.keys(sysGroups));
+  if (autoSys) {
+    const sysName = autoSys.charAt(0).toUpperCase() + autoSys.slice(1);
+    document.getElementById('sys-badge').textContent = sysName;
     setTimeout(() => {
-      selectSys(autoSystem);
-      autoRotate = false;
+      if (sysGroups[autoSys]) {
+        selectSys(autoSys);
+      } else {
+        console.warn('System not found in 3D explorer:', autoSys);
+      }
     }, 600);
   }
 
-})();
+  /* ── BACK NAVIGATION ── */
+  window.goBack = function() {
+    const prev = document.referrer;
+    if (prev && prev.includes(window.location.hostname)) {
+      window.location.href = prev;
+    } else {
+      window.location.href = 'home.html';
+    }
+  };
 
-}
+  } catch(e) {
+    console.error('Anatomy 3D Error:', e);
+    document.body.innerHTML = '<div style="color:#ff3a5c;padding:40px;font-family:monospace;text-align:center"><h1>Error loading 3D</h1><pre>' + e.message + '</pre></div>';
+  }
+})();
 </script>
 </body>
 </html>
