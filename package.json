@@ -1,0 +1,25 @@
+{
+  "name": "mediscan-hololaboratory",
+  "version": "1.0.0",
+  "description": "![CI/CD Pipeline](https://github.com/ejr-arch/mediscan-hololaboratory/actions/workflows/main.yml/badge.svg)",
+  "main": "login.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejr-arch/mediscan-hololaboratory.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ejr-arch/mediscan-hololaboratory/issues"
+  },
+  "homepage": "https://github.com/ejr-arch/mediscan-hololaboratory#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}
