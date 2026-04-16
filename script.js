@@ -88,7 +88,7 @@ function localAnalyze(input) {
   ) {
     explanation =
       "The digestive system breaks down food into nutrients that the body can absorb and use for energy and growth.";
-    video = "client/assets/stomach.mp4";
+    video = "client/assets/digestive.mp4";
     bodyPart = "digestive";
   } else if (
     input.includes("skeletal") ||
@@ -97,12 +97,12 @@ function localAnalyze(input) {
   ) {
     explanation =
       "The skeletal system provides structural support for the body and protects vital organs.";
-    video = "client/assets/skeleton.mp4";
+    video = "client/assets/skeletal.mp4";
     bodyPart = "skeletal";
   } else if (input.includes("muscle") || input.includes("muscular")) {
     explanation =
       "The muscular system allows movement of body parts through contraction and relaxation of muscles.";
-    video = "client/assets/muscles.mp4";
+    video = "client/assets/muscle.mp4";
     bodyPart = "muscles";
   } else if (input.includes("eye") || input.includes("vision")) {
     explanation =
@@ -114,11 +114,58 @@ function localAnalyze(input) {
       "The ear detects sound waves and converts them into neural signals while also helping maintain body balance.";
     video = "client/assets/ear.mp4";
     bodyPart = "ear";
-  } else if (input.includes("blood")) {
+  } else if (
+    input.includes("urinary") ||
+    input.includes("kidney") ||
+    input.includes("bladder")
+  ) {
     explanation =
-      "Blood transports oxygen, nutrients, hormones and waste materials throughout the body.";
-    video = "client/assets/blood.mp4";
-    bodyPart = "blood";
+      "The urinary system filters blood and removes waste products through urine production and excretion.";
+    video = "client/assets/urinary.mp4";
+    bodyPart = "urinary";
+  } else if (
+    input.includes("endocrine") ||
+    input.includes("hormone") ||
+    input.includes("thyroid") ||
+    input.includes("adrenal")
+  ) {
+    explanation =
+      "The endocrine system regulates body functions through hormones secreted by glands into the bloodstream.";
+    video = "client/assets/endocrine.mp4";
+    bodyPart = "endocrine";
+  } else if (
+    input.includes("pulse") ||
+    input.includes("heartbeat") ||
+    input.includes("blood pressure")
+  ) {
+    explanation =
+      "Pulse reflects the rhythmic beating of the heart as it pumps blood through the arteries.";
+    video = "client/assets/pulse.mp4";
+    bodyPart = "pulse";
+  } else if (
+    input.includes("leg") ||
+    input.includes("thigh") ||
+    input.includes("calf")
+  ) {
+    explanation =
+      "The leg contains bones, muscles, and joints that enable walking, running, and standing.";
+    video = "client/assets/leg.mp4";
+    bodyPart = "leg";
+  } else if (input.includes("knee") || input.includes("knees")) {
+    explanation =
+      "The knee is a hinge joint connecting the thigh and shin bones, supporting body weight and movement.";
+    video = "client/assets/knees.mp4";
+    bodyPart = "knees";
+  } else if (input.includes("back") || input.includes("spine")) {
+    explanation =
+      "The back includes the spine, muscles, and vertebrae that support posture and protect the spinal cord.";
+    video = "client/assets/back.mp4";
+    bodyPart = "back";
+  } else if (input.includes("dog") || input.includes("canine")) {
+    explanation =
+      "Veterinary scan mode: Analyzing canine anatomy and health indicators.";
+    video = "client/assets/dog.mp4";
+    bodyPart = "dog";
   }
 
   return { explanation, video, bodyPart };
